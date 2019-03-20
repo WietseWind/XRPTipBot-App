@@ -99,7 +99,7 @@ class AlertContainer extends Component {
         }
     }
 
-    static getDerivedStateFromProps(nextProps, prevState){
+    static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.visible !== prevState.visible) {
             if (nextProps.visible) {
                 clearTimeout(this._showTimeout);
@@ -111,8 +111,7 @@ class AlertContainer extends Component {
             return {
                 visible: nextProps.visible,
             };
-        }
-        else return null;
+        } else return null;
     }
 
     componentWillUnmount() {
@@ -187,7 +186,7 @@ class AlertContainer extends Component {
                 ]).start(({ finished }) => {
                     if (finished) {
                         this._animating = false;
-                        this.props.instance.destroy()
+                        this.props.instance.destroy();
                     }
                 });
             });
@@ -264,18 +263,15 @@ class Alert extends Component {
     static propTypes = AlertContainer.propTypes;
     static types = types;
     static durations = durations;
-    _alert = null
+    _alert = null;
 
-    static show = (message, options = { type: types.SUCCESS, duration: durations.LONG }) =>{
+    static show = (message, options = { type: types.SUCCESS, duration: durations.LONG }) => {
         this._alert = new RootSiblings();
 
         return this._alert.update(
-            (
-                <AlertContainer {...options} visible instance={this._alert}>
-                    {message}
-                </AlertContainer>
-            ),
-
+            <AlertContainer {...options} visible instance={this._alert}>
+                {message}
+            </AlertContainer>,
         );
     };
 

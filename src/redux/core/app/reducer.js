@@ -13,12 +13,12 @@ export default function appState(state = initialState, action = {}) {
         case types.ROOT_CHANGED:
             return state.merge({
                 root: action.root,
-                initialized: action.root === "after-login" ? true : state.initialized
+                initialized: action.root === 'after-login' ? true : state.initialized,
             });
         case types.STATE_CHANGED:
             return state.merge({
                 state: action.state,
-                message: action.message || ''
+                message: action.message || '',
             });
         default:
             return state;

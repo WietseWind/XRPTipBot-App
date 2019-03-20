@@ -11,7 +11,6 @@ import {
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 
-
 const styles = StyleSheet.create({
     button: {
         height: 60,
@@ -36,7 +35,6 @@ const styles = StyleSheet.create({
         opacity: 0.5,
     },
 });
-
 
 class Button extends Component {
     static propTypes = {
@@ -137,6 +135,5 @@ class Button extends Component {
         );
     }
 }
-
 
 module.exports = Button;

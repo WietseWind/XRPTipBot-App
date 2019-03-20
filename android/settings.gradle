@@ -18,4 +18,5 @@ include ':react-native-view-shot'
 project(':react-native-view-shot').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-view-shot/android')
 include ':react-native-interactable'
 project(':react-native-interactable').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-interactable/lib/android')
-
+include ':react-native-discovery'
+project(':react-native-discovery').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-discovery/android')

@@ -1,19 +1,13 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import {
-    WebView,
-    StyleSheet,
-    Platform, View, Text, Vibration, ActivityIndicator
-} from 'react-native';
+import { WebView, StyleSheet, Platform, View, Text, Vibration, ActivityIndicator } from 'react-native';
 
-import {Alert, Separator, PinInput, Spacer} from '@components';
-import {AppStyles, AppColors, AppSizes, AppFonts} from '@theme/';
+import { Alert, Separator, PinInput, Spacer } from '@components';
+import { AppStyles, AppColors, AppSizes, AppFonts } from '@theme/';
 
-
-import LottieView from "lottie-react-native";
-import LinearGradient from "react-native-linear-gradient";
-
+import LottieView from 'lottie-react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 class RemoteLoginView extends Component {
     static displayName = 'RemoteLoginView';
@@ -22,8 +16,8 @@ class RemoteLoginView extends Component {
         super(props);
 
         this.state = {
-            isLoading : true,
-            step: "login"
+            isLoading: true,
+            step: 'login',
         };
     }
 
@@ -40,114 +34,104 @@ class RemoteLoginView extends Component {
         statusBarColor: '#4476f4',
     };
 
-
-
     static propTypes = {
         onSuccessRead: PropTypes.func,
     };
 
-    onMessage = (event) => {
-        const token = event.nativeEvent.data.replace("xrptipbot://", "");
-        if(token && token.length > 0){
-            this.handleLogin(token)
+    onMessage = event => {
+        const token = event.nativeEvent.data.replace('xrptipbot://', '');
+        if (token && token.length > 0) {
+            this.handleLogin(token);
         }
     };
 
-    handleLogin = (token) => {
-
-
-            // normal login
-            if(token.length <= 40) {
-                return Alert.show('This is not an XRPTipBot token QRCode', {
-                    type: 'error'
-                });
-            }
-
-            this.props.navigator.setStyle({
-                navBarHidden: true
+    handleLogin = token => {
+        // normal login
+        if (token.length <= 40) {
+            return Alert.show('This is not an XRPTipBot token QRCode', {
+                type: 'error',
             });
-            this.setState({
-                step:'loading'
-            });
+        }
 
-            this.props.login(token).then(() => {
+        this.props.navigator.setStyle({
+            navBarHidden: true,
+        });
+        this.setState({
+            step: 'loading',
+        });
+
+        this.props
+            .login(token)
+            .then(() => {
                 this.props.changeAppRoot('after-login');
                 this.props.connect();
-            }).catch((message) => {
-                Alert.show(message || 'Invalid Token.', {type: 'error'});
+            })
+            .catch(message => {
+                Alert.show(message || 'Invalid Token.', { type: 'error' });
                 Vibration.vibrate();
-            }).finally(() => {
+            })
+            .finally(() => {
                 this.props.navigator.setStyle({
-                    navBarHidden: false
+                    navBarHidden: false,
                 });
                 this.setState({
-                    step:'login'
-                })
+                    step: 'login',
+                });
             });
-
-
-    }
+    };
 
     renderSpinner = () => {
         return (
             <View style={styles.loading}>
-                <ActivityIndicator
-                    size="large"
-                    color={"white"}
-                />
+                <ActivityIndicator size="large" color={'white'} />
                 <Text style={[AppStyles.h5, styles.whiteText, AppStyles.textCenterAligned]}>Loading ...</Text>
-
             </View>
-
         );
     };
 
-
     render() {
-        const { step } = this.state ;
+        const { step } = this.state;
         switch (step) {
-            case "login":
-                return(
+            case 'login':
+                return (
                     <WebView
                         originWhitelist={['*']}
-                        onLoad={() => this.setState({isLoading: false})}
+                        onLoad={() => this.setState({ isLoading: false })}
                         source={{
-                            uri:`https://www.xrptipbot.com/app?from=${Platform.OS}`,
-                            headers: {"XRPTIPBOT": "TRUE"}
+                            uri: `https://www.xrptipbot.com/app?from=${Platform.OS}`,
+                            headers: { XRPTIPBOT: 'TRUE' },
                         }}
                         startInLoadingState={true}
                         onMessage={this.onMessage}
-                        style={{flex: 1}}
+                        style={{ flex: 1 }}
                         renderLoading={() => {
                             return this.renderSpinner();
                         }}
                     />
-
                 );
-            case "loading":
-                return(
+            case 'loading':
+                return (
                     <LinearGradient
                         style={[styles.mainContent]}
-                        colors={['#4F00BC' , '#29ABE2']}
-                        start={{x: 0, y: .1}} end={{x: .1, y: 1}}
+                        colors={['#4F00BC', '#29ABE2']}
+                        start={{ x: 0, y: 0.1 }}
+                        end={{ x: 0.1, y: 1 }}
                     >
                         <LottieView
                             source={require('../../../assets/animation/loading_semicircle.json')}
-                            style={{ width: 400, height: 400,}}
+                            style={{ width: 400, height: 400 }}
                             autoPlay
                             loop
                             resizeMode={'contain'}
                         />
-                        <Text style={[AppStyles.h5, AppStyles.textCenterAligned, styles.whiteText]}>Connecting account ...</Text>
+                        <Text style={[AppStyles.h5, AppStyles.textCenterAligned, styles.whiteText]}>
+                            Connecting account ...
+                        </Text>
                     </LinearGradient>
-                )
-
+                );
         }
-
     }
-
 }
-
 
 /* Styles ==================================================================== */
 const styles = StyleSheet.create({
@@ -156,8 +140,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-around',
     },
-    whiteText:{
-        color: '#fff'
+    whiteText: {
+        color: '#fff',
     },
     loading: {
         position: 'absolute',
@@ -168,8 +152,8 @@ const styles = StyleSheet.create({
         bottom: 0,
         backgroundColor: AppColors.brand.primary,
         justifyContent: 'center',
-        alignItems: 'center'
-    }
+        alignItems: 'center',
+    },
 });
 
 export default RemoteLoginView;

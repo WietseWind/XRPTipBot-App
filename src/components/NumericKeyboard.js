@@ -12,24 +12,24 @@ import {
     Image,
     Platform,
     Dimensions,
-    TouchableHighlight, BackHandler, Alert
+    TouchableHighlight,
+    BackHandler,
+    Alert,
 } from 'react-native';
 
-import NumericInput from './NumericInput'
+import NumericInput from './NumericInput';
 
-
-import {AppSizes, AppColors} from '@theme';
+import { AppSizes, AppColors } from '@theme';
 
 import PropTypes from 'prop-types';
 
-
-class NumericKeyboard extends Component{
+class NumericKeyboard extends Component {
     static propTypes = {
         keyboardHeader: PropTypes.func,
         value: PropTypes.any,
         placeholder: PropTypes.string,
         placeholderTextColor: PropTypes.string,
-        disabled:PropTypes.bool,
+        disabled: PropTypes.bool,
         caretHidden: PropTypes.bool,
         secureTextEntry: PropTypes.bool,
         style: PropTypes.any,
@@ -45,149 +45,149 @@ class NumericKeyboard extends Component{
             modalVisible: false,
             caretHidden: false,
             secureTextEntry: false,
-            valueArr:[],
-            numArr:[1,2,3,4,5,6,7,8,9,'.',0,'X'],
-            cursorLock:true,
+            valueArr: [],
+            numArr: [1, 2, 3, 4, 5, 6, 7, 8, 9, '.', 0, 'X'],
+            cursorLock: true,
         };
     }
-
-
 
     componentDidMount() {
         let that = this;
 
-        this.props.secureTextEntry && this.setState({
-            secureTextEntry: true
-        });
-        this.props.caretHidden && this.setState({
-            caretHidden: true
-        });
+        this.props.secureTextEntry &&
+            this.setState({
+                secureTextEntry: true,
+            });
+        this.props.caretHidden &&
+            this.setState({
+                caretHidden: true,
+            });
     }
 
-
-    shouldComponentUpdate(nextProps,nextState){
-        return this.state.modalVisible != nextState.modalVisible ||
+    shouldComponentUpdate(nextProps, nextState) {
+        return (
+            this.state.modalVisible != nextState.modalVisible ||
             this.state.cursorLock != nextState.cursorLock ||
             this.props.disabled != nextProps.disabled ||
-            this.props.value != nextProps.value ;
-
+            this.props.value != nextProps.value
+        );
     }
-
 
     static getDerivedStateFromProps(props, state) {
         if (props.value.split('') !== state.valueArr) {
             return {
-                valueArr:props.value.split(''),
+                valueArr: props.value.split(''),
             };
         }
         return null;
     }
 
-
-    clear(){
+    clear() {
         this.removeAll();
     }
 
-    isFocused(){
-        if(this.state.cursorLock){
-            return false
-        }else{
-            return true
+    isFocused() {
+        if (this.state.cursorLock) {
+            return false;
+        } else {
+            return true;
         }
     }
 
-    blur(){
-        this.hide()
+    blur() {
+        this.hide();
     }
 
-    focus(){
-        this.show()
+    focus() {
+        this.show();
     }
 
-
-    show(){
+    show() {
         this.setState({
-            modalVisible:true,
-            cursorLock:false
+            modalVisible: true,
+            cursorLock: false,
         });
         this.onFocus();
     }
 
-    hide(){
+    hide() {
         this.setState({
-            modalVisible:false,
-            cursorLock:true
+            modalVisible: false,
+            cursorLock: true,
         });
         this.onBlur();
     }
 
-    inputEvent(value){
-        DeviceEventEmitter.emit('numericKeyboardInput',value);
+    inputEvent(value) {
+        DeviceEventEmitter.emit('numericKeyboardInput', value);
         this.onChangeText(value);
     }
 
-    onChangeText(value){
-        if(value == undefined || value== null) return false;
-        this.props.onChangeText && this.props.onChangeText(value.join(''))
+    onChangeText(value) {
+        if (value == undefined || value == null) return false;
+        this.props.onChangeText && this.props.onChangeText(value.join(''));
     }
 
-    onFocus(){
-        this.props.onFocus && this.props.onFocus()
+    onFocus() {
+        this.props.onFocus && this.props.onFocus();
     }
 
-    onBlur(){
-        this.props.onBlur && this.props.onBlur()
+    onBlur() {
+        this.props.onBlur && this.props.onBlur();
     }
 
-    regs(valueArr){
-        if(!this.props.regs){
-            return valueArr
+    regs(valueArr) {
+        if (!this.props.regs) {
+            return valueArr;
         }
         valueArr = this.props.regs(valueArr.join(''));
         valueArr = valueArr.split('');
-        return valueArr
+        return valueArr;
     }
 
-    add(value){
+    add(value) {
         let valueArr = this.state.valueArr;
         valueArr.push(value);
-        if(valueArr == '' || valueArr == undefined || valueArr == null){
-            return
+        if (valueArr == '' || valueArr == undefined || valueArr == null) {
+            return;
         }
         valueArr = this.regs(valueArr);
         this.setState({
-            valueArr:valueArr
+            valueArr: valueArr,
         });
-        this.inputEvent(valueArr)
+        this.inputEvent(valueArr);
     }
 
-
-    remove(){
+    remove() {
         let valueArr = this.state.valueArr;
-        if(valueArr.length == 0){ return };
+        if (valueArr.length == 0) {
+            return;
+        }
         valueArr.pop();
         this.setState({
-            valueArr:valueArr
+            valueArr: valueArr,
         });
-        this.inputEvent(valueArr)
+        this.inputEvent(valueArr);
     }
 
-    removeAll(){
+    removeAll() {
         let valueArr = this.state.valueArr;
-        if(valueArr.length == 0){ return };
+        if (valueArr.length == 0) {
+            return;
+        }
         valueArr = [];
         this.setState({
-            valueArr:valueArr
+            valueArr: valueArr,
         });
-        this.inputEvent(valueArr)
+        this.inputEvent(valueArr);
     }
 
-    renderNumText(flag){
-        return this.state.numArr.slice(flag,(flag+3)).map((item,index)=>{
-            let styleLine = (item == 'X' || item == '.') ? styles.toolLine : styles.line;
-            let styleNumText = (item == 'X' || item == '.') ? styles.specialNumText : styles.numText;
-            if(item == 'X'){
-                return(
+    renderNumText(flag) {
+        return this.state.numArr.slice(flag, flag + 3).map((item, index) => {
+            let styleLine = item == 'X' || item == '.' ? styles.toolLine : styles.line;
+            let styleNumText = item == 'X' || item == '.' ? styles.specialNumText : styles.numText;
+            if (item == 'X') {
+                return (
                     <TouchableHighlight
                         underlayColor={'#ECF1FD'}
                         style={styleLine}
@@ -196,27 +196,33 @@ class NumericKeyboard extends Component{
                         onPress={this.remove.bind(this)}
                         onLongPress={this.removeAll.bind(this)}
                     >
-                        <Image style={styles.removeIcon} source={require('../assets/images/icon-delete.png')}/>
+                        <Image style={styles.removeIcon} source={require('../assets/images/icon-delete.png')} />
                     </TouchableHighlight>
-                )
+                );
             }
-            return(
-                <TouchableHighlight underlayColor={'#ECF1FD'} style={styleLine} activeOpacity={0.7} key={index} onPress={this.add.bind(this,item)}>
+            return (
+                <TouchableHighlight
+                    underlayColor={'#ECF1FD'}
+                    style={styleLine}
+                    activeOpacity={0.7}
+                    key={index}
+                    onPress={this.add.bind(this, item)}
+                >
                     <Text style={styleNumText}>{item}</Text>
                 </TouchableHighlight>
-            )
-        })
+            );
+        });
     }
-    renderNum(){
-        return this.state.numArr.map((item,index)=>{
-            if(index % 3 == 0){
-                return(
+    renderNum() {
+        return this.state.numArr.map((item, index) => {
+            if (index % 3 == 0) {
+                return (
                     <View style={styles.numWrap} key={index}>
                         {this.renderNumText(index)}
                     </View>
-                )
+                );
             }
-        })
+        });
     }
 
     render() {
@@ -235,34 +241,39 @@ class NumericKeyboard extends Component{
                     placeholderTextColor={this.props.placeholderTextColor}
                 />
                 <Modal
-                    animationType={"slide"}
+                    animationType={'slide'}
                     hardwareAccelerated={true}
-                    presentationStyle={"overFullScreen"}
+                    presentationStyle={'overFullScreen'}
                     transparent={true}
                     visible={this.state.modalVisible}
-                    onRequestClose={() => { this.hide() } }
-
+                    onRequestClose={() => {
+                        this.hide();
+                    }}
                 >
-                    <View style={styles.root} >
-                        <Text style={{position:'absolute',top:0,left:0,bottom:0,right:0,backgroundColor:'rgba(0,0,0,0)'}}
-                              onPress={this.hide.bind(this)}>
-                        </Text>
+                    <View style={styles.root}>
+                        <Text
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                bottom: 0,
+                                right: 0,
+                                backgroundColor: 'rgba(0,0,0,0)',
+                            }}
+                            onPress={this.hide.bind(this)}
+                        />
                         <View style={styles.keyboardWrap}>
                             <View style={styles.headerWrap}>
-                                {
-                                    this.props.keyboardHeader ? (
-                                        this.props.keyboardHeader()
-                                    ) : (
-                                        <Image style={styles.headerImage}  source={require('../assets/images/logo.png')}/>
-                                    )
-                                }
+                                {this.props.keyboardHeader ? (
+                                    this.props.keyboardHeader()
+                                ) : (
+                                    <Image style={styles.headerImage} source={require('../assets/images/logo.png')} />
+                                )}
                                 {/*<TouchableOpacity onPress={this.hide.bind(this)} style={styles.closeIconWrap}>*/}
-                                    {/*<Image style={styles.closeIcon} source={require('../assets/images/icon-down.png')}/>*/}
+                                {/*<Image style={styles.closeIcon} source={require('../assets/images/icon-down.png')}/>*/}
                                 {/*</TouchableOpacity>*/}
                             </View>
-                            {
-                                this.renderNum()
-                            }
+                            {this.renderNum()}
                         </View>
                     </View>
                 </Modal>
@@ -271,125 +282,121 @@ class NumericKeyboard extends Component{
     }
 }
 
-
-
 let basePx = Platform.OS === 'ios' ? 750 : 720;
 let { height, width } = Dimensions.get('window');
-function px2dp(px){
-    return px / basePx * width;
+function px2dp(px) {
+    return (px / basePx) * width;
 }
 
 const styles = StyleSheet.create({
-    textInputWrap:{
-        borderWidth:1,
-        height:40,
-        borderColor:'#999999',
-        borderRadius:5,
-        flexDirection:'row',
-        alignItems:'center',
-        paddingLeft:px2dp(10)
+    textInputWrap: {
+        borderWidth: 1,
+        height: 40,
+        borderColor: '#999999',
+        borderRadius: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingLeft: px2dp(10),
     },
-    cursorWrap:{
-        height:40,
-        flexDirection:'row',
-        alignItems:'center',
+    cursorWrap: {
+        height: 40,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
-    cursor:{
-        fontSize:30,
-        fontWeight:'300'
+    cursor: {
+        fontSize: 30,
+        fontWeight: '300',
     },
-    root:{
-        flex:1,
-        flexDirection:'column',
-        alignItems:'center',
-        justifyContent:'center'
-    },
-    defaultHeader:{
-        flex:1,
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'center',
-    },
-    headerWrap:{
-        height:42,
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'center'
-    },
-    headerText:{
-        fontSize:14,
-        color:'#5FBF9F'
-    },
-    headerImage:{
-        tintColor :"#3E77E6",
-        width:px2dp(260),
-        resizeMode:'contain'
-    },
-    closeIconWrap:{
+    root: {
         flex: 1,
-        backgroundColor: "#fff"
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    closeIcon:{
-        width:px2dp(40),
-        resizeMode:'contain'
+    defaultHeader: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    removeIcon:{
-        width:px2dp(50),
-        resizeMode:'contain'
+    headerWrap: {
+        height: 42,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    keyboardWrap:{
+    headerText: {
+        fontSize: 14,
+        color: '#5FBF9F',
+    },
+    headerImage: {
+        tintColor: '#3E77E6',
+        width: px2dp(260),
+        resizeMode: 'contain',
+    },
+    closeIconWrap: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    closeIcon: {
+        width: px2dp(40),
+        resizeMode: 'contain',
+    },
+    removeIcon: {
+        width: px2dp(50),
+        resizeMode: 'contain',
+    },
+    keyboardWrap: {
         height: AppSizes.screen.height * 0.425,
-        position:'absolute',
-        bottom:0,
-        left:0,
-        right:0,
-        backgroundColor:'#ffffff',
-        borderWidth:0,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#ffffff',
+        borderWidth: 0,
         borderTopWidth: 1,
-        borderTopColor:'#cccccc'
+        borderTopColor: '#cccccc',
     },
-    numWrap:{
-        flexDirection:'row',
-        justifyContent:'space-around'
+    numWrap: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
     },
-    toolLine:{
-        borderTopColor:'#cccccc',
-        borderRightColor:'#cccccc',
-        borderTopWidth:1,
-        borderRightWidth:1,
-        alignItems:'center',
-        justifyContent:'center',
-        flex:1,
+    toolLine: {
+        borderTopColor: '#cccccc',
+        borderRightColor: '#cccccc',
+        borderTopWidth: 1,
+        borderRightWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
         height: AppSizes.screen.height * 0.09,
-        backgroundColor:'#F5F8FC'
+        backgroundColor: '#F5F8FC',
     },
-    line:{
-        borderTopColor:'#cccccc',
-        borderRightColor:'#cccccc',
-        borderTopWidth:1,
-        borderRightWidth:1,
-        alignItems:'center',
-        justifyContent:'center',
-        flex:1,
-        height:AppSizes.screen.height * 0.09
+    line: {
+        borderTopColor: '#cccccc',
+        borderRightColor: '#cccccc',
+        borderTopWidth: 1,
+        borderRightWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        height: AppSizes.screen.height * 0.09,
     },
-    specialNumText:{
-        paddingBottom:px2dp(15),
-        color:'#000000',
-        fontSize:26,
-        fontWeight:'900'
+    specialNumText: {
+        paddingBottom: px2dp(15),
+        color: '#000000',
+        fontSize: 26,
+        fontWeight: '900',
     },
-    numText:{
-        color:'#000000',
-        fontSize:26,
-        fontWeight: Platform.OS === 'ios' ? '500' : '400'
+    numText: {
+        color: '#000000',
+        fontSize: 26,
+        fontWeight: Platform.OS === 'ios' ? '500' : '400',
     },
-    bottomWrap:{
-        flexDirection:'row',
-        justifyContent:'space-around'
-    }
+    bottomWrap: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
 });
 
-
-
-export default NumericKeyboard
+export default NumericKeyboard;

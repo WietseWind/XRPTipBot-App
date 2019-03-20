@@ -1,29 +1,23 @@
 // redux lib
-import {applyMiddleware, compose, createStore} from 'redux';
-import {AsyncStorage} from 'react-native';
-import {persistStore, autoRehydrate} from 'redux-persist'; // for persist redux
+import { applyMiddleware, compose, createStore } from 'redux';
+import { AsyncStorage } from 'react-native';
+import { persistStore, autoRehydrate } from 'redux-persist'; // for persist redux
 
-import ImmutablePersistenceTransform from './ImmutablePersistenceTransform'
+import ImmutablePersistenceTransform from './ImmutablePersistenceTransform';
 
 // redux tools
-import thunk from "redux-thunk";
+import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 
 import rootReducer from '@redux/reducer';
 import { pushMiddleware } from '@redux/middleware/';
 
 // Load middleware
-let middleware = [
-    thunk,
-    pushMiddleware
-];
+let middleware = [thunk, pushMiddleware];
 
 if (__DEV__) {
     // Dev-only middleware
-    middleware = [
-        ...middleware,
-        logger
-    ];
+    middleware = [...middleware, logger];
 }
 
 export default function configureStore(initialState) {
@@ -39,9 +33,9 @@ export default function configureStore(initialState) {
                 {
                     storage: AsyncStorage,
                     whitelist: ['accountState'],
-                    transforms: [ImmutablePersistenceTransform]
+                    transforms: [ImmutablePersistenceTransform],
                 },
-                () => resolve(store)
+                () => resolve(store),
             );
         } catch (e) {
             reject(e);

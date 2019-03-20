@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { StyleSheet, Text, TouchableOpacity, View, Image, Animated } from 'react-native';
 
 import { AppFonts, AppColors } from '@theme';
-import  { LoadingIndicator } from '@components' ;
+import { LoadingIndicator } from '@components';
 
 const MAX_LENGTH = 6;
 
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     buttonTextSecondary: {
         fontFamily: AppFonts.base.familyBold,
         color: AppColors.brand.light,
-        fontSize: AppFonts.base.size * 0.80,
+        fontSize: AppFonts.base.size * 0.8,
         textAlign: 'center',
     },
     pin: {
@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
     backspaceIcon: {
         tintColor: AppColors.brand.grey,
     },
-
 });
 
 /* Component ==================================================================== */
@@ -76,7 +75,7 @@ export default class PinInput extends Component {
     static defaultProps = {
         middleText: null,
         wrongCode: false,
-        onClear: null
+        onClear: null,
     };
 
     constructor(props) {
@@ -111,17 +110,16 @@ export default class PinInput extends Component {
     handleClear() {
         this.setState({ value: '' });
 
-        if(this.props.onClear ) {
-            this.props.onClear()
+        if (this.props.onClear) {
+            this.props.onClear();
         }
     }
 
     handlePress(num) {
         let { value } = this.state;
-        const { lodaing } = this.props
+        const { lodaing } = this.props;
 
-        if (lodaing) return
-
+        if (lodaing) return;
 
         value += String(num);
 
@@ -142,9 +140,7 @@ export default class PinInput extends Component {
         return (
             <TouchableOpacity onPress={() => this.handlePress(num)} style={styles.button}>
                 <Text style={styles.buttonText}>{num}</Text>
-                {!!alphabet &&
-                <Text style={styles.buttonTextSecondary}>{alphabet}</Text>
-                }
+                {!!alphabet && <Text style={styles.buttonTextSecondary}>{alphabet}</Text>}
             </TouchableOpacity>
         );
     }
@@ -175,20 +171,18 @@ export default class PinInput extends Component {
             <View style={styles.pad}>
                 <View style={styles.row}>
                     {loading ? (
-                        <LoadingIndicator color={AppColors.brand.light}/>
+                        <LoadingIndicator color={AppColors.brand.light} />
                     ) : (
                         <Animated.Text style={[styles.pin, animatedStyle]}>
                             {marks}
                             {dots}
                         </Animated.Text>
                     )}
-
-
                 </View>
 
                 {!!middleText && (
                     <View style={styles.row}>
-                        <Text style={{color: AppColors.brand.light}}>{middleText}</Text>
+                        <Text style={{ color: AppColors.brand.light }}>{middleText}</Text>
                     </View>
                 )}
                 <View style={styles.row}>
@@ -211,9 +205,7 @@ export default class PinInput extends Component {
 
                 <View style={styles.row}>
                     <TouchableOpacity onPress={() => this.handleClear()} style={styles.button}>
-                        <Text style={[styles.buttonText, {fontSize: AppFonts.h2.size}]}>
-                            C
-                        </Text>
+                        <Text style={[styles.buttonText, { fontSize: AppFonts.h2.size }]}>C</Text>
                     </TouchableOpacity>
                     {this.renderButton(0)}
                     <TouchableOpacity onPress={() => this.handleRemove()} style={styles.button}>

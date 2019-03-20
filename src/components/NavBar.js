@@ -1,55 +1,45 @@
-import React, {PureComponent} from 'react';
-import {
-    StyleSheet,
-    Alert,
-    Platform,
-    TouchableWithoutFeedback,
-    View,
-    Animated
-} from 'react-native';
+import React, { PureComponent } from 'react';
+import { StyleSheet, Alert, Platform, TouchableWithoutFeedback, View, Animated } from 'react-native';
 
 const DOUBLE_PRESS_DELAY = 300;
-const VERSION = "1.4.1";
+const VERSION = '1.4.1';
 
 export default class NavBar extends PureComponent {
-
     constructor(props) {
         super(props);
-        this.fadeIn =  new Animated.Value(0)
+        this.fadeIn = new Animated.Value(0);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         Animated.timing(this.fadeIn, {
             toValue: 1,
             duration: 300,
             useNativeDriver: true,
-        }).start()
+        }).start();
     }
 
     handleLogoPress = () => {
         const now = new Date().getTime();
 
-        if (this.lastImagePress && (now - this.lastImagePress) < DOUBLE_PRESS_DELAY) {
+        if (this.lastImagePress && now - this.lastImagePress < DOUBLE_PRESS_DELAY) {
             delete this.lastImagePress;
             this.handleLogoDoublePress();
-        }
-        else {
+        } else {
             this.lastImagePress = now;
         }
     };
 
     handleLogoDoublePress = () => {
-        Alert.alert("Version", `XRPTipBot ${VERSION} Latest`)
+        Alert.alert('Version', `XRPTipBot ${VERSION} Latest`);
     };
 
     render() {
         return (
             <View style={styles.container}>
-                <TouchableWithoutFeedback  onPress={this.handleLogoPress}>
-                    <Animated.Image style={{opacity: this.fadeIn}}  source={require('../assets/images/logo.png')} />
+                <TouchableWithoutFeedback onPress={this.handleLogoPress}>
+                    <Animated.Image style={{ opacity: this.fadeIn }} source={require('../assets/images/logo.png')} />
                 </TouchableWithoutFeedback>
             </View>
-
         );
     }
 }
@@ -60,8 +50,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'transparent',
-        paddingLeft: Platform.OS === 'android' ? 40 : 0
+        paddingLeft: Platform.OS === 'android' ? 40 : 0,
     },
 });
-
-

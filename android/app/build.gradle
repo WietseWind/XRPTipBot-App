@@ -160,6 +160,7 @@ dependencies {
     implementation project(':react-native-share')
     implementation project(':react-native-view-shot')
     implementation project(':react-native-interactable')
+    implementation project(':react-native-discovery')
     implementation(project(':react-native-firebase')) {
            transitive = false
     }

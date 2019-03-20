@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 
 import _ from 'lodash';
 
-import {View, Text, StyleSheet, TouchableHighlight, FlatList, Alert, Platform, Animated} from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight, FlatList, Alert, Platform, Animated } from 'react-native';
 
 // Consts and Libs
 import { AppStyles, AppColors, AppFonts } from '@theme/';
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
         marginRight: 10,
-        marginLeft: 25
+        marginLeft: 25,
     },
     row: {
         flexDirection: 'row',
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     },
     name: {
         fontSize: 16,
-        fontWeight: Platform.OS === 'ios' ? '500': '400',
+        fontWeight: Platform.OS === 'ios' ? '500' : '400',
         color: AppColors.textPrimary,
     },
     address: {
@@ -41,32 +41,27 @@ const styles = StyleSheet.create({
     },
 });
 
-
 /* Component ==================================================================== */
 
-class ListItem extends Component{
+class ListItem extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            scaleValue: new Animated.Value(0)
-        }
+            scaleValue: new Animated.Value(0),
+        };
     }
 
     componentDidMount() {
         Animated.timing(this.state.scaleValue, {
             toValue: 1,
-            duration : 300,
-            delay: this.props.index * 150
+            duration: 300,
+            delay: this.props.index * 150,
         }).start();
     }
 
     render() {
-        return (
-            <Animated.View style={{ opacity: this.state.scaleValue }}>
-                { this.props.children }
-            </Animated.View>
-        );
+        return <Animated.View style={{ opacity: this.state.scaleValue }}>{this.props.children}</Animated.View>;
     }
 }
 
@@ -75,7 +70,7 @@ class AddContactView extends Component {
     static componentName = 'AddContactView';
 
     static navigatorStyle = {
-        tabBarHidden: Platform.OS !== "ios"
+        tabBarHidden: Platform.OS !== 'ios',
     };
 
     constructor(props) {
@@ -84,7 +79,7 @@ class AddContactView extends Component {
         this.state = {
             lookingUp: false,
             searchText: '',
-            dataSource: [] ,
+            dataSource: [],
         };
 
         this.lookupTimeout = null;
@@ -92,50 +87,53 @@ class AddContactView extends Component {
         this.searched = false;
     }
 
-
-    componentDidMount () {
+    componentDidMount() {
         this.props.navigator.setTitle({
-            title: "Add new contact"
+            title: 'Add new contact',
         });
     }
 
-    addToContacts = (user) => {
+    addToContacts = user => {
         const { accountState, persistContacts } = this.props;
 
         const contacts = accountState.contacts || [];
 
         // make old new contacts not new :D
-        contacts.map((obj) => {
-            if(obj.new){
-                obj.new = false
+        contacts.map(obj => {
+            if (obj.new) {
+                obj.new = false;
             }
         });
 
-        const newList = [ ...contacts, ...[{
-            u: user.username,
-            s: user.slug,
-            n: user.network,
-            new: true
-        }]];
+        const newList = [
+            ...contacts,
+            ...[
+                {
+                    u: user.username,
+                    s: user.slug,
+                    n: user.network,
+                    new: true,
+                },
+            ],
+        ];
 
         persistContacts(newList).then(() => {
             this.props.navigator.pop();
-            this.props.onSuccessAdd(user.username)
-        })
+            this.props.onSuccessAdd(user.username);
+        });
     };
 
-    onItemPress = (user) => {
+    onItemPress = user => {
         Alert.alert(
             'Add Contact',
-            `Add ${user.network === "discord" ? user.slug : user.username} to contact list ?`,
+            `Add ${user.network === 'discord' ? user.slug : user.username} to contact list ?`,
             [
-                {text: 'Yes', onPress: () => this.addToContacts(user), },
-                {text: 'No', onPress: () => null, style: 'cancel'},
+                { text: 'Yes', onPress: () => this.addToContacts(user) },
+                { text: 'No', onPress: () => null, style: 'cancel' },
             ],
-            { cancelable: false }
-        )
+            { cancelable: false },
+        );
     };
-
 
     onSearchChange = text => {
         const { lookupUsers, accountState } = this.props;
@@ -143,60 +141,86 @@ class AddContactView extends Component {
         clearTimeout(this.lookupTimeout);
 
         this.setState({
-            searchText: text
+            searchText: text,
         });
 
         this.lookupTimeout = setTimeout(() => {
-            if (text && text.length > 0 ){
+            if (text && text.length > 0) {
                 const me = accountState.uid;
-                lookupUsers(text).then((res) => {
+                lookupUsers(text).then(res => {
                     this.setState({
                         dataSource: _.remove(res.data, function(u) {
-                            return _.findIndex(accountState.contacts, function(o) { return (o.u == u.username); }) < 0 && u.username !== me;
-                        })
+                            return (
+                                _.findIndex(accountState.contacts, function(o) {
+                                    return o.u == u.username;
+                                }) < 0 && u.username !== me
+                            );
+                        }),
                     });
-                })
-            }else{
+                });
+            } else {
                 this.shouldClearList = true;
                 this.setState({
-                    dataSource: []
+                    dataSource: [],
                 });
             }
-        }, 500)
-
+        }, 500);
     };
 
     renderItem = user => {
-        const {item, index} = user;
+        const { item, index } = user;
 
         let networkIcon = null;
         switch (item.network) {
-            case "twitter" :
-                networkIcon = <Avatar onPress={() => {this.onItemPress(item);}} network={"twitter"} source={{uri: `https://twitter.com/${item.username}/profile_image?size=original`}} />;
+            case 'twitter':
+                networkIcon = (
+                    <Avatar
+                        onPress={() => {
+                            this.onItemPress(item);
+                        }}
+                        network={'twitter'}
+                        source={{ uri: `https://twitter.com/${item.username}/profile_image?size=original` }}
+                    />
+                );
                 break;
-            case "discord":
-                networkIcon = <Avatar  onPress={() => {this.onItemPress(item);}} network={"discord"} />;
+            case 'discord':
+                networkIcon = (
+                    <Avatar
+                        onPress={() => {
+                            this.onItemPress(item);
+                        }}
+                        network={'discord'}
+                    />
+                );
                 break;
-            case "reddit":
-                networkIcon = <Avatar onPress={() => {this.onItemPress(item);}}  network={"reddit"} />;
+            case 'reddit':
+                networkIcon = (
+                    <Avatar
+                        onPress={() => {
+                            this.onItemPress(item);
+                        }}
+                        network={'reddit'}
+                    />
+                );
                 break;
         }
 
         return (
-            <ListItem key={index} index={ index }>
+            <ListItem key={index} index={index}>
                 <TouchableHighlight
-                    onPress={() => {this.onItemPress(item);}}
+                    onPress={() => {
+                        this.onItemPress(item);
+                    }}
                     underlayColor="rgba(154, 154, 154, 0.25)"
                 >
                     <View style={styles.row}>
                         {networkIcon}
-                        <Text style={styles.name}>{
-                            item.network === "discord" ? item.slug : item.username
-                        }</Text>
+                        <Text style={styles.name}>{item.network === 'discord' ? item.slug : item.username}</Text>
                     </View>
                 </TouchableHighlight>
             </ListItem>
-        )};
+        );
+    };
 
     render() {
         const { dataSource } = this.state;
@@ -215,7 +239,6 @@ class AddContactView extends Component {
                     </View>
                 </View>
 
-
                 <View style={[AppStyles.flex1]}>
                     <FlatList
                         contentContainerStyle={{ flexGrow: 1 }}
@@ -223,17 +246,15 @@ class AddContactView extends Component {
                         renderItem={user => this.renderItem(user)}
                         data={dataSource}
                         initialNumToRender={50}
-                        ListEmptyComponent = {
+                        ListEmptyComponent={
                             this.state.searchText && !this.state.lookingUp ? <Error text="No Result" /> : null
                         }
                     />
                 </View>
-
             </View>
         );
     }
 }
-
 
 /* Export Component ==================================================================== */
 export default AddContactView;

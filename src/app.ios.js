@@ -1,18 +1,17 @@
-import {Provider} from "react-redux";
-import {Navigation} from "react-native-navigation";
-import {Platform} from "react-native";
+import { Provider } from 'react-redux';
+import { Navigation } from 'react-native-navigation';
+import { Platform } from 'react-native';
 
-import * as appActions from "@redux/core/app/actions";
+import * as appActions from '@redux/core/app/actions';
 import configureStore from '@redux/store';
 
-import {registerScreens} from "./screens";
+import { registerScreens } from './screens';
 
 import { AppStyles, AppColors } from '@theme/';
 
-
 export default class App {
     constructor() {
-        configureStore().then((_store) => {
+        configureStore().then(_store => {
             this.store = _store;
 
             registerScreens(this.store, Provider);
@@ -22,8 +21,8 @@ export default class App {
         });
     }
 
-    onStoreUpdate(){
-        const {root} = this.store.getState().appState;
+    onStoreUpdate() {
+        const { root } = this.store.getState().appState;
         // handle a root change
         if (this.currentRoot != root) {
             this.currentRoot = root;
@@ -40,7 +39,7 @@ export default class App {
                     },
                     appStyle: {
                         orientation: 'portrait',
-                    }
+                    },
                 });
                 return;
             case 'after-login':
@@ -50,8 +49,8 @@ export default class App {
                             label: 'History',
                             screen: 'xrptipbot.TransactionsScreen',
                             icon: require('./assets/images/history.png'),
-                            title: "History",
-                            navigatorStyle:{
+                            title: 'History',
+                            navigatorStyle: {
                                 navBarBackgroundColor: AppColors.brand.primary,
                             },
                         },
@@ -69,22 +68,24 @@ export default class App {
                             label: 'Contacts',
                             screen: 'xrptipbot.ContactsScreen',
                             icon: require('./assets/images/contacts.png'),
-                            title: "Contacts",
-                            navigatorStyle:{
+                            title: 'Contacts',
+                            navigatorStyle: {
                                 navBarBackgroundColor: AppColors.brand.primary,
                             },
                             navigatorButtons: {
-                                rightButtons :[{
-                                    icon: require('./assets/images/navicon_add.png'),
-                                    id: 'addContact',
-                                    systemItem: "add"
-                                }],
-                            }
-                        }
+                                rightButtons: [
+                                    {
+                                        icon: require('./assets/images/navicon_add.png'),
+                                        id: 'addContact',
+                                        systemItem: 'add',
+                                    },
+                                ],
+                            },
+                        },
                     ],
                     animationType: Platform.OS === 'ios' ? 'slide-down' : 'fade',
                     appStyle: AppStyles.appStyle,
-                    tabsStyle: AppStyles.tabsStyle
+                    tabsStyle: AppStyles.tabsStyle,
                 });
                 return;
             default:

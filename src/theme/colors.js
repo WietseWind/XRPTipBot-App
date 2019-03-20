@@ -13,13 +13,13 @@ const brand = {
         green: '#41E196',
         red: '#F75858',
         grey: '#AFBDD8',
-        light: '#ECF1FD'
+        light: '#ECF1FD',
     },
 };
 
 const text = {
     textPrimary: brand.brand.secondary,
-    textSecondary: brand.brand.grey
+    textSecondary: brand.brand.grey,
 };
 
 const buttons = {

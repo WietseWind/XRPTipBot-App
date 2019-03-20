@@ -10,6 +10,7 @@
     "release:android": "cd android && ./gradlew assembleRelease",
     "bundle:ios": "node ./node_modules/react-native/local-cli/cli.js bundle --platform ios --entry-file index.js --bundle-output ios/XRPTipBot/main.jsbundle --dev=false --verbose --assets-dest ios/XRPTipBot",
     "bundle:android": "node ./node_modules/react-native/local-cli/cli.js bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle",
+    "prettier": "prettier --write `find src -name \"*.js\"`",
     "postinstall": "sh ./postinstall.sh"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "react-native": "0.57.0",
     "react-native-camera": "^1.3.0",
     "react-native-device-info": "^0.22.5",
+    "react-native-discovery": "git+https://github.com/N3TC4T/react-native-discovery.git",
     "react-native-firebase": "^5.1.0",
     "react-native-interactable": "^0.1.10",
     "react-native-linear-gradient": "^2.4.0",
@@ -39,6 +41,7 @@
   },
   "devDependencies": {
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "prettier": "^1.16.4",
     "remote-redux-devtools": "^0.5.12"
   }
 }

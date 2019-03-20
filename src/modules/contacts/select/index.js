@@ -1,3 +1,3 @@
 import SelectContactContainer from './SelectContactContainer';
 
-export default SelectContactContainer
+export default SelectContactContainer;

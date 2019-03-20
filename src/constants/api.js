@@ -10,7 +10,7 @@ export default {
         ['token', '/api/action:login/'],
         ['internal', '/api/action:internal/'],
         ['logout', '/api/action:unlink/'],
-            // paper api
+        // paper api
         ['activate', '/paper-api/action:activate'],
         ['webauth', '/api/action:webauth'],
         // account
@@ -25,9 +25,7 @@ export default {
         ['lookup', '/api/action:lookup'],
         // push notifications
         ['push_token', '/api/action:persistpushtoken'],
-
-
     ]),
 
-    tokenKey: 'token'
+    tokenKey: 'token',
 };

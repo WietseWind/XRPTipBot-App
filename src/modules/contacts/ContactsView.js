@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
     name: {
         fontSize: AppStyles.baseText.fontSize,
-        fontWeight: Platform.OS === "ios" ? '500' : '400',
+        fontWeight: Platform.OS === 'ios' ? '500' : '400',
         color: AppColors.textPrimary,
     },
     sectionHeaderText: {
@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     },
 });
 
-
 /* Component ==================================================================== */
 class Row extends Component {
     constructor(props) {
@@ -62,13 +61,13 @@ class Row extends Component {
     }
 
     static propTypes = {
-        onPressDelete: PropTypes.func.isRequired
+        onPressDelete: PropTypes.func.isRequired,
     };
 
     componentWillMount() {
         this._visibility = new Animated.Value(this.props.new ? 1 : 0);
 
-        if(this.props.new){
+        if (this.props.new) {
             Animated.sequence([
                 Animated.timing(this._visibility, {
                     duration: 1000,
@@ -84,27 +83,32 @@ class Row extends Component {
                 }),
             ]).start();
         }
-
-
     }
 
     render() {
         return (
-            <View style={{backgroundColor: '#FFF'}}>
-
-                <View style={{position: 'absolute', left: 0, right: 0,  height: AppSizes.screen.width * 0.14 }} pointerEvents='box-none'>
-                    <Animated.View style={
-                        [styles.trashHolder, {
-                            transform: [{
-                                translateX: this._deltaX.interpolate({
-                                    inputRange: [-155, 0],
-                                    outputRange: [0, 155]
-                                })
-                            }]
-                        }
-                        ]}>
+            <View style={{ backgroundColor: '#FFF' }}>
+                <View
+                    style={{ position: 'absolute', left: 0, right: 0, height: AppSizes.screen.width * 0.14 }}
+                    pointerEvents="box-none"
+                >
+                    <Animated.View
+                        style={[
+                            styles.trashHolder,
+                            {
+                                transform: [
+                                    {
+                                        translateX: this._deltaX.interpolate({
+                                            inputRange: [-155, 0],
+                                            outputRange: [0, 155],
+                                        }),
+                                    },
+                                ],
+                            },
+                        ]}
+                    >
                         <TouchableOpacity onPress={this.props.onPressDelete}>
-                           <Text style={[AppStyles.baseText, {color:"#FFF"}]}>Remove</Text>
+                            <Text style={[AppStyles.baseText, { color: '#FFF' }]}>Remove</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 </View>
@@ -112,32 +116,34 @@ class Row extends Component {
                 <Interactable.View
                     horizontalOnly={true}
                     snapPoints={[
-                        {x: 78, damping: 1 - 1 - 0.7, tension: 150},
-                        {x: 0, damping: 1 - 1 - 0.7, tension: 150},
-                        {x: -AppSizes.screen.width * 0.25, damping: 1 - 1 - 0.7, tension: 150}
+                        { x: 78, damping: 1 - 1 - 0.7, tension: 150 },
+                        { x: 0, damping: 1 - 1 - 0.7, tension: 150 },
+                        { x: -AppSizes.screen.width * 0.25, damping: 1 - 1 - 0.7, tension: 150 },
                     ]}
-                    boundaries={{left: -AppSizes.screen.width * 0.3, right: 0, bounce: 0}}
-                    animatedValueX={this._deltaX}>
+                    boundaries={{ left: -AppSizes.screen.width * 0.3, right: 0, bounce: 0 }}
+                    animatedValueX={this._deltaX}
+                >
                     <Animated.View
-                        style={[{
-                            left: 0,
-                            right: 0,
-                            height: AppSizes.screen.width * 0.14 ,
-                            backgroundColor: this._visibility.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: ['rgba(231,174,60,0)', 'rgba(231,174,60,1)'],
-                            }),
-                        } , AppStyles.centerA]}
+                        style={[
+                            {
+                                left: 0,
+                                right: 0,
+                                height: AppSizes.screen.width * 0.14,
+                                backgroundColor: this._visibility.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: ['rgba(231,174,60,0)', 'rgba(231,174,60,1)'],
+                                }),
+                            },
+                            AppStyles.centerA,
+                        ]}
                     >
                         {this.props.children}
                     </Animated.View>
                 </Interactable.View>
-
             </View>
         );
     }
 }
-
 
 /* Component ==================================================================== */
 class ContactsView extends Component {
@@ -145,7 +151,7 @@ class ContactsView extends Component {
 
     static navigatorStyle = {
         navBarButtonColor: '#FFFFFF',
-        statusBarTextColorScheme: 'light'
+        statusBarTextColorScheme: 'light',
     };
 
     constructor(props) {
@@ -157,35 +163,33 @@ class ContactsView extends Component {
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
-
     onNavigatorEvent(event) {
-        switch ((event.type)){
+        switch (event.type) {
             case 'NavBarButtonPress':
                 if (event.id === 'addContact') {
-                    if(Platform.OS === 'ios') this.props.navigator.toggleTabs({to: 'hidden',});
+                    if (Platform.OS === 'ios') this.props.navigator.toggleTabs({ to: 'hidden' });
 
                     this.props.navigator.push({
                         screen: 'xrptipbot.ContactsAddScreen',
-                        backButtonTitle: "Back",
+                        backButtonTitle: 'Back',
                         title: 'Add new contact',
                         navigatorStyle: {
-                            drawUnderTabBar: true
+                            drawUnderTabBar: true,
                         },
                         passProps: {
-                            onSuccessAdd: this.onSuccessAdd
-                        }
+                            onSuccessAdd: this.onSuccessAdd,
+                        },
                     });
                 }
                 break;
             case 'ScreenChangedEvent':
-                switch (event.id){
+                switch (event.id) {
                     case 'willAppear':
-                        if(Platform.OS === 'ios') this.props.navigator.toggleTabs({to: 'shown',});
-                        break
+                        if (Platform.OS === 'ios') this.props.navigator.toggleTabs({ to: 'shown' });
+                        break;
                 }
         }
     }
-
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.accountState.contacts !== this.props.accountState.contacts) {
@@ -195,103 +199,109 @@ class ContactsView extends Component {
         }
     }
 
-
-    componentDidMount () {
-        this.fetchContacts()
+    componentDidMount() {
+        this.fetchContacts();
     }
 
-    convertContactsArrayToMap = (contacts) => {
-        const {accountState} = this.props ;
+    convertContactsArrayToMap = contacts => {
+        const { accountState } = this.props;
         const contactsCategoryMap = [];
 
-        contacts = contacts ? contacts : (accountState.contacts ? accountState.contacts : []);
+        contacts = contacts ? contacts : accountState.contacts ? accountState.contacts : [];
 
         contacts.forEach((item, index) => {
-
             let firstLetter = '';
-            if (item.n === "discord") {
+            if (item.n === 'discord') {
                 firstLetter = item.s.charAt(0).toUpperCase();
-            }else{
-                 firstLetter = item.u.charAt(0).toUpperCase();
+            } else {
+                firstLetter = item.u.charAt(0).toUpperCase();
             }
 
-            if(contactsCategoryMap.filter(function (r) { return r.title === firstLetter }).length  < 1) {
-                contactsCategoryMap.push({title: firstLetter, data: []})
+            if (
+                contactsCategoryMap.filter(function(r) {
+                    return r.title === firstLetter;
+                }).length < 1
+            ) {
+                contactsCategoryMap.push({ title: firstLetter, data: [] });
             }
-            contactsCategoryMap.filter(function (r) { return r.title === firstLetter })[0].data.push(item)
-
+            contactsCategoryMap
+                .filter(function(r) {
+                    return r.title === firstLetter;
+                })[0]
+                .data.push(item);
         });
 
         // Sort
         return _(contactsCategoryMap)
-            .sortBy(function(o) { return o.title; })
+            .sortBy(function(o) {
+                return o.title;
+            })
             .value();
     };
 
-    onItemPress = (item) => {
-        if(Platform.OS === 'ios') this.props.navigator.toggleTabs({to: 'hidden',});
+    onItemPress = item => {
+        if (Platform.OS === 'ios') this.props.navigator.toggleTabs({ to: 'hidden' });
 
         this.props.navigator.push({
-            screen: "xrptipbot.SendScreen",
-            backButtonTitle: "Cancel",
-            title: "Send a tip",
+            screen: 'xrptipbot.SendScreen',
+            backButtonTitle: 'Cancel',
+            title: 'Send a tip',
             navigatorStyle: {
-                drawUnderTabBar: true
+                drawUnderTabBar: true,
             },
             passProps: {
                 sendTo: {
                     username: item.u,
                     network: item.n,
-                    slug: item.s
-                }
-            }
+                    slug: item.s,
+                },
+            },
         });
     };
 
-    onPressDelete = (i) => {
+    onPressDelete = i => {
         const { accountState, persistContacts } = this.props;
 
         let newArray = accountState.contacts.filter(function(item) {
-            return item.u !== i.u
+            return item.u !== i.u;
         });
 
-        persistContacts(newArray.asMutable())
+        persistContacts(newArray.asMutable());
     };
 
-
-    renderSectionHeader = ({section: {title}}) => {
-        return(
-            <View style={{backgroundColor: "#eeeeee", padding: 3}}>
+    renderSectionHeader = ({ section: { title } }) => {
+        return (
+            <View style={{ backgroundColor: '#eeeeee', padding: 3 }}>
                 <Text style={styles.sectionHeaderText}>{title}</Text>
             </View>
-        )
+        );
     };
 
-    onSuccessAdd = (username) => {
-        const { dataSource} = this.state;
+    onSuccessAdd = username => {
+        const { dataSource } = this.state;
 
         const firstLetter = username.charAt(0).toUpperCase();
 
         dataSource.forEach((item, sectionIndex) => {
-            if(item.title === firstLetter){
+            if (item.title === firstLetter) {
                 item.data.forEach((item, index) => {
-                    if(item.u == username){
+                    if (item.u == username) {
                         this.list.scrollToLocation({
                             itemIndex: index,
                             viewPosition: 0.5,
                             animated: true,
-                            sectionIndex: sectionIndex
+                            sectionIndex: sectionIndex,
                         });
                     }
-                })
+                });
             }
         });
     };
 
-
     fetchContacts = () => {
         this.setState({ isRefreshing: true });
-        this.props.getContacts()
+        this.props
+            .getContacts()
             .then(() => {
                 this.setState({
                     isRefreshing: false,
@@ -308,18 +318,40 @@ class ContactsView extends Component {
         const { item } = user;
         let networkIcon = null;
         switch (item.n) {
-            case "twitter" :
-                networkIcon = <Avatar  onPress={() => {this.onItemPress(item);}} network={"twitter"} source={{uri: `https://twitter.com/${item.u}/profile_image?size=original`}} />;
+            case 'twitter':
+                networkIcon = (
+                    <Avatar
+                        onPress={() => {
+                            this.onItemPress(item);
+                        }}
+                        network={'twitter'}
+                        source={{ uri: `https://twitter.com/${item.u}/profile_image?size=original` }}
+                    />
+                );
                 break;
-            case "discord":
-                networkIcon = <Avatar onPress={() => {this.onItemPress(item);}}   network={"discord"} />;
+            case 'discord':
+                networkIcon = (
+                    <Avatar
+                        onPress={() => {
+                            this.onItemPress(item);
+                        }}
+                        network={'discord'}
+                    />
+                );
                 break;
-            case "reddit":
-                networkIcon = <Avatar  onPress={() => {this.onItemPress(item);}}  network={"reddit"} />;
+            case 'reddit':
+                networkIcon = (
+                    <Avatar
+                        onPress={() => {
+                            this.onItemPress(item);
+                        }}
+                        network={'reddit'}
+                    />
+                );
                 break;
         }
 
-        return(
+        return (
             <Row new={item.new} onPressDelete={() => this.onPressDelete(item)}>
                 <TouchableHighlight
                     onPress={() => {
@@ -333,7 +365,7 @@ class ContactsView extends Component {
                     </View>
                 </TouchableHighlight>
             </Row>
-        )
+        );
     };
 
     render() {
@@ -342,36 +374,35 @@ class ContactsView extends Component {
         if (isRefreshing) {
             if (dataSource.length < 1) {
                 return (
+                    <View style={AppStyles.container}>
+                        <View style={[AppStyles.flex3, AppStyles.centerAligned]}>
+                            <LoadingIndicator />
 
-                        <View style={AppStyles.container}>
-                            <View style={[AppStyles.flex3,  AppStyles.centerAligned]}>
-                                <LoadingIndicator />
+                            <Spacer size={10} />
 
-                                <Spacer size={10} />
-
-                                <Text style={AppStyles.h5}>Loading ...</Text>
-                            </View>
+                            <Text style={AppStyles.h5}>Loading ...</Text>
                         </View>
+                    </View>
                 );
             }
         }
 
         return (
             <View style={[AppStyles.container]}>
-
                 {!dataSource ? (
                     <Error text="No Contact" />
                 ) : (
                     <View style={[AppStyles.flex1]}>
                         <SectionList
                             contentContainerStyle={{ flexGrow: 1 }}
-
-                            ref={(ref) => {this.list = ref}}
+                            ref={ref => {
+                                this.list = ref;
+                            }}
                             refreshing={isRefreshing}
                             onRefresh={() => {
                                 this.fetchContacts();
                             }}
-                            ListEmptyComponent = {<Error text={"No contacts"}/>}
+                            ListEmptyComponent={<Error text={'No contacts'} />}
                             sections={this.state.dataSource}
                             renderItem={this.renderItem}
                             renderSectionHeader={this.renderSectionHeader}
@@ -383,7 +414,6 @@ class ContactsView extends Component {
         );
     }
 }
-
 
 /* Export Component ==================================================================== */
 export default ContactsView;

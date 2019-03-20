@@ -4,11 +4,7 @@ var React = require('react');
 var PropTypes = require('prop-types');
 var createReactClass = require('create-react-class');
 
-var {
-    View,
-    WebView,
-    Platform
-} = require('react-native');
+var { View, WebView, Platform } = require('react-native');
 
 var Canvas = createReactClass({
     propTypes: {
@@ -27,8 +23,15 @@ var Canvas = createReactClass({
                 <WebView
                     automaticallyAdjustContentInsets={false}
                     scalesPageToFit={Platform.OS === 'android'}
-                    contentInset={{top: 0, right: 0, bottom: 0, left: 0}}
-                    source={{html: "<style>*{margin:0;padding:0;}canvas{transform:translateZ(0);}</style><canvas></canvas><script>var canvas = document.querySelector('canvas');(" + renderString + ").call(" + contextString + ", canvas);</script>"}}
+                    contentInset={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                    source={{
+                        html:
+                            "<style>*{margin:0;padding:0;}canvas{transform:translateZ(0);}</style><canvas></canvas><script>var canvas = document.querySelector('canvas');(" +
+                            renderString +
+                            ').call(' +
+                            contextString +
+                            ', canvas);</script>',
+                    }}
                     opaque={false}
                     underlayColor={'transparent'}
                     style={this.props.style}
@@ -40,7 +43,7 @@ var Canvas = createReactClass({
                 />
             </View>
         );
-    }
+    },
 });
 
 module.exports = Canvas;

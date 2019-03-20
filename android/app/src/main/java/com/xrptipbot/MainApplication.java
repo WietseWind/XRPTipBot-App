@@ -15,6 +15,8 @@ import com.wix.interactable.Interactable;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import com.joshblour.RNDiscovery.RNDiscoveryPackage;
+
 
 import com.xrptipbot.MotionDetectorPackage;
 
@@ -54,7 +56,8 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new Interactable(),
                 new RNFirebasePackage(),
                 new RNFirebaseMessagingPackage(),
-                new RNFirebaseNotificationsPackage()
+                new RNFirebaseNotificationsPackage(),
+                new RNDiscoveryPackage()
 
         );
     }

@@ -1,11 +1,9 @@
-
 import * as types from './actionTypes';
-
 
 const initialState = {
     connectionStatus: 'IDLE',
-    token: "",
-    lastMsgID: "0"
+    token: '',
+    lastMsgID: '0',
 };
 
 export default function pushReducer(state = initialState, action) {
@@ -14,18 +12,18 @@ export default function pushReducer(state = initialState, action) {
             return {
                 ...state,
                 connectionStatus: 'REGISTERED',
-                token: action.payload.token
+                token: action.payload.token,
             };
         case types.PUSH_UNREGISTER:
             return {
                 ...state,
                 connectionStatus: 'IDLE',
-                token: ""
+                token: '',
             };
         case types.UPDATE_LAST_MESSAGE_ID:
             return {
                 ...state,
-                lastMsgID: action.payload
+                lastMsgID: action.payload,
             };
         default:
             return state;

@@ -1,3 +1,3 @@
 import IntroViewContainer from './IntroViewContainer';
 
-export default IntroViewContainer
+export default IntroViewContainer;

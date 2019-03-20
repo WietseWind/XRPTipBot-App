@@ -11,7 +11,6 @@ export default {
 
     // URLs
     urls: {
-        baseURL: 'https://www.xrptipbot.com/'
+        baseURL: 'https://www.xrptipbot.com/',
     },
-
 };

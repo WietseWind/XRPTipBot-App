@@ -1,13 +1,12 @@
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 
 import * as appActions from '@redux/core/app/actions';
 import * as accountActions from '@redux/core/account/actions';
 
-
 import ReceiveView from './ReceiveView';
 
 const mapStateToProps = state => ({
-    accountState: state.accountState
+    accountState: state.accountState,
 });
 
 const mapDispatchToProps = {
@@ -15,8 +14,10 @@ const mapDispatchToProps = {
     getBalance: accountActions.getBalance,
     logout: accountActions.logout,
     disconnect: appActions.disconnect,
-    lookupUsers: accountActions.lookupUsers
-
+    lookupUsers: accountActions.lookupUsers,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReceiveView);
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(ReceiveView);

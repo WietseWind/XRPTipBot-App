@@ -26,7 +26,7 @@ export default {
         tabBarSelectedButtonColor: Colors.brand.primary,
         tabFontFamily: Fonts.base.familyBold,
         navBarTextFontFamily: Fonts.base.familyBold,
-        initialTabIndex: 1
+        initialTabIndex: 1,
     },
     // Default
     container: {
@@ -36,7 +36,7 @@ export default {
         backgroundColor: Colors.background,
     },
     containerCentered: {
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     windowSize: {
         height: Sizes.screen.height,

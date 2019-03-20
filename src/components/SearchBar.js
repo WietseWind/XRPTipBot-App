@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, TextInput, View, Image, PixelRatio} from 'react-native';
+import { StyleSheet, TextInput, View, Image, PixelRatio } from 'react-native';
 import PropTypes from 'prop-types';
 
 // Consts and Libs
@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
         height: AppSizes.screen.width * 0.14,
         paddingHorizontal: 10,
         paddingRight: 30,
-        fontSize: AppStyles.h5.fontSize
+        fontSize: AppStyles.h5.fontSize,
     },
     icon: {
         tintColor: '#AFBCD8',
@@ -28,15 +28,15 @@ export default class SearchBar extends Component {
         };
     }
 
-    componentDidMount(){
+    componentDidMount() {
         const { autoFocus } = this.props;
-        if(autoFocus){
-            setTimeout(() => this.focus() , 250)
+        if (autoFocus) {
+            setTimeout(() => this.focus(), 250);
         }
     }
 
     focus = () => {
-        this.text.focus()
+        this.text.focus();
     };
 
     render() {
@@ -44,23 +44,19 @@ export default class SearchBar extends Component {
         return (
             <View style={[AppStyles.row, AppStyles.paddingLeftSml, { backgroundColor }]}>
                 <View style={[AppStyles.flex1, AppStyles.centerAligned]}>
-                    <Image
-                        source={require('../assets/images/search.png')}
-                        style={styles.icon}
-                    />
+                    <Image source={require('../assets/images/search.png')} style={styles.icon} />
                 </View>
                 <View style={AppStyles.flex6}>
                     <TextInput
-                        ref={(r) => this.text = r }
+                        ref={r => (this.text = r)}
                         autoCorrect={false}
                         style={[
-                            {...styles.input, ...inputStyle},
+                            { ...styles.input, ...inputStyle },
                             {
                                 backgroundColor: innerBackground,
                                 borderRadius: radius,
                                 borderWidth: border ? 1 : 0,
                             },
-
                         ]}
                         onChangeText={text => {
                             this.setState({ text });
@@ -79,12 +75,12 @@ export default class SearchBar extends Component {
 }
 SearchBar.defaultProps = {
     placeHolder: 'SearchBar messages',
-    backgroundColor: "#F7F9FE",
-    innerBackground: "#F7F9FE",
+    backgroundColor: '#F7F9FE',
+    innerBackground: '#F7F9FE',
     radius: 5,
     border: false,
     onChangeText: null,
-    autoFocus: false
+    autoFocus: false,
 };
 SearchBar.propTypes = {
     onChangeText: PropTypes.func,

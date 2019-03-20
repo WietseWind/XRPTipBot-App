@@ -1,25 +1,17 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import {
-    StyleSheet,
-    View,
-    Text,
-    Vibration,
-    Linking,
-    Platform,
-    TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, View, Text, Vibration, Linking, Platform, TouchableOpacity } from 'react-native';
 
-import {Alert, PinInput} from '@components';
+import { Alert, PinInput } from '@components';
 import { AppStyles, AppColors } from '@theme/';
 
 import { RNCamera as Camera } from 'react-native-camera';
 import LottieView from 'lottie-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const INTERNAL_REGEX = RegExp("(xrptipbot:\\/\\/)(internal)(\\/)(activate)(\\/)(.*)+");
-const TOKEN_REGEX = RegExp("^[a-zA-Z0-9]+$");
+const INTERNAL_REGEX = RegExp('(xrptipbot:\\/\\/)(internal)(\\/)(activate)(\\/)(.*)+');
+const TOKEN_REGEX = RegExp('^[a-zA-Z0-9]+$');
 
 /* Styles ==================================================================== */
 const styles = StyleSheet.create({
@@ -45,29 +37,29 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-around',
     },
-    whiteText:{
-        color: '#fff'
+    whiteText: {
+        color: '#fff',
     },
     notAuthorizedView: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20
+        padding: 20,
     },
     notAuthorizedViewText: {
-        color:'#364150',
+        color: '#364150',
         textAlign: 'center',
-        fontSize: 18
+        fontSize: 18,
     },
-    btn:{
+    btn: {
         backgroundColor: '#dedfe3',
         alignSelf: 'center',
         borderRadius: 5,
         paddingHorizontal: 30,
         paddingVertical: 10,
     },
-    btnText:{
-        color:'#364150',
+    btnText: {
+        color: '#364150',
         fontSize: 20,
     },
     animation: {
@@ -79,25 +71,23 @@ const styles = StyleSheet.create({
 class AuthView extends Component {
     static displayName = 'AuthView';
 
-
     constructor(props) {
         super(props);
 
         this.state = {
             step: 'scan',
-            isScanning: false
+            isScanning: false,
         };
 
         this.scanTimeout = null;
         this.mounted = false;
 
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-
     }
 
     static navigatorStyle = {
-        navBarTextColor: "#fff",
-        navBarButtonColor: "#fff",
+        navBarTextColor: '#fff',
+        navBarButtonColor: '#fff',
         statusBarTextColorScheme: 'light',
         drawUnderNavBar: true,
         navBarTranslucent: Platform.OS === 'ios',
@@ -105,7 +95,7 @@ class AuthView extends Component {
         navBarTransparent: true,
         navBarBackgroundColor: 'transparent',
         topBarElevationShadowEnabled: false,
-        statusBarColor: "black"
+        statusBarColor: 'black',
     };
 
     static propTypes = {
@@ -119,15 +109,15 @@ class AuthView extends Component {
     };
 
     onNavigatorEvent(event) {
-        switch ((event.type)){
+        switch (event.type) {
             case 'ScreenChangedEvent':
-                switch (event.id){
+                switch (event.id) {
                     case 'willAppear':
                         this.props.navigator.setStyle({
-                            navBarHidden: false
+                            navBarHidden: false,
                         });
                         this.mounted = true;
-                        break
+                        break;
                     case 'willDisappear':
                         this.mounted = false;
                         break;
@@ -135,24 +125,21 @@ class AuthView extends Component {
         }
     }
 
-    _handleOpenURL = (event) => {
+    _handleOpenURL = event => {
         const { url } = event;
-        const token = url.replace("xrptipbot://", "");
-        if(token && token.length > 0){
-            this.handleLogin({data: token})
+        const token = url.replace('xrptipbot://', '');
+        if (token && token.length > 0) {
+            this.handleLogin({ data: token });
         }
     };
 
-
-    componentWillMount(){
+    componentWillMount() {
         Linking.addEventListener('url', this._handleOpenURL);
     }
-
 
     componentWillUnmount() {
         Linking.removeEventListener('url', this._handleOpenURL);
     }
-
 
     notAuthorizedView = (
         <View style={styles.notAuthorizedView}>
@@ -162,27 +149,29 @@ class AuthView extends Component {
                 autoPlay
                 loop
             />
-            <Text  style={styles.notAuthorizedViewText}>
-                Need permission to access Camera,{"\n"}
-                Please go to <Text style={{fontWeight: 'bold'}}>Settings</Text> and allow{"\n"}
-                <Text style={{fontWeight: 'bold', color:'#364150'}}>XRPTipBot</Text> to access Camera
+            <Text style={styles.notAuthorizedViewText}>
+                Need permission to access Camera,{'\n'}
+                Please go to <Text style={{ fontWeight: 'bold' }}>Settings</Text> and allow{'\n'}
+                <Text style={{ fontWeight: 'bold', color: '#364150' }}>XRPTipBot</Text> to access Camera
             </Text>
-            {Platform.OS === 'ios' &&
-            <TouchableOpacity onPress={()=>Linking.openURL('app-settings:')} activeOpacity={0.7} style={[styles.btn , {marginTop:15}]}>
-                <Text style={[styles.btnText]}>Go to Settings</Text>
-            </TouchableOpacity>
-            }
-
+            {Platform.OS === 'ios' && (
+                <TouchableOpacity
+                    onPress={() => Linking.openURL('app-settings:')}
+                    activeOpacity={0.7}
+                    style={[styles.btn, { marginTop: 15 }]}
+                >
+                    <Text style={[styles.btnText]}>Go to Settings</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 
-    invalidToken = (message) => {
-        Alert.show(message || 'Invalid Token.', {type: 'error'});
+    invalidToken = message => {
+        Alert.show(message || 'Invalid Token.', { type: 'error' });
         Vibration.vibrate();
     };
 
-    handleLogin = (scanned) => {
-
+    handleLogin = scanned => {
         const { data } = scanned;
 
         if (this.state.isScanning || !this.mounted) return;
@@ -190,109 +179,111 @@ class AuthView extends Component {
         clearTimeout(this.scanTimeout);
 
         this.setState({
-            isScanning: true
+            isScanning: true,
         });
 
-        if (INTERNAL_REGEX.test(data)){
+        if (INTERNAL_REGEX.test(data)) {
             // internal login
 
             this.props.navigator.setStyle({
-                navBarHidden: true
+                navBarHidden: true,
             });
             this.setState({
-                step:'loading'
+                step: 'loading',
             });
 
-            this.props.paperLogin(data).then((resp) => {
-                switch (resp) {
-                    case "Error":
-                        this.invalidToken();
-                        break;
-                    case "PIN required":
-                        this.props.navigator.push({
-                            screen: 'xrptipbot.PinCodeScreen',
-                            backButtonTitle: "Cancel",
-                            passProps: {
-                                paperToken: data,
-                                action: "check"
-                            }
-                        });
-                        break;
-                    case "SET_PIN":
-                        this.props.navigator.push({
-                            screen: 'xrptipbot.PinCodeScreen',
-                            backButtonTitle: "Cancel",
-                            passProps: {
-                                paperToken: data,
-                                action: "set"
-                            }
-                        });
-                        break;
-                    default:
-                        this.invalidToken();
-                }
-            }).catch((error) => {
-                this.invalidToken(error);
-            }).finally(() => {
-                this.props.navigator.setStyle({
-                    navBarHidden: false
-                });
-                this.setState({
-                    step:'scan'
+            this.props
+                .paperLogin(data)
+                .then(resp => {
+                    switch (resp) {
+                        case 'Error':
+                            this.invalidToken();
+                            break;
+                        case 'PIN required':
+                            this.props.navigator.push({
+                                screen: 'xrptipbot.PinCodeScreen',
+                                backButtonTitle: 'Cancel',
+                                passProps: {
+                                    paperToken: data,
+                                    action: 'check',
+                                },
+                            });
+                            break;
+                        case 'SET_PIN':
+                            this.props.navigator.push({
+                                screen: 'xrptipbot.PinCodeScreen',
+                                backButtonTitle: 'Cancel',
+                                passProps: {
+                                    paperToken: data,
+                                    action: 'set',
+                                },
+                            });
+                            break;
+                        default:
+                            this.invalidToken();
+                    }
                 })
-            });
-
-
-        }else if (TOKEN_REGEX.test(data)){
-
+                .catch(error => {
+                    this.invalidToken(error);
+                })
+                .finally(() => {
+                    this.props.navigator.setStyle({
+                        navBarHidden: false,
+                    });
+                    this.setState({
+                        step: 'scan',
+                    });
+                });
+        } else if (TOKEN_REGEX.test(data)) {
             // normal login
-            if(data.length <= 40) {
-                return this.invalidToken("This is not an XRPTipBot token QRCode!")
+            if (data.length <= 40) {
+                return this.invalidToken('This is not an XRPTipBot token QRCode!');
             }
 
             this.props.navigator.setStyle({
-                navBarHidden: true
+                navBarHidden: true,
             });
             this.setState({
-                step:'loading'
+                step: 'loading',
             });
 
-            this.props.login(data).then(() => {
-                this.props.changeAppRoot('after-login');
-                this.props.connect();
-            }).catch((error) => {
-                this.invalidToken(error)
-            }).finally(() => {
-                this.props.navigator.setStyle({
-                    navBarHidden: false
-                });
-                this.setState({
-                    step:'scan'
+            this.props
+                .login(data)
+                .then(() => {
+                    this.props.changeAppRoot('after-login');
+                    this.props.connect();
                 })
-            });
-
-        }else{
-            this.invalidToken("This is not an XRPTipBot token QRCode!")
+                .catch(error => {
+                    this.invalidToken(error);
+                })
+                .finally(() => {
+                    this.props.navigator.setStyle({
+                        navBarHidden: false,
+                    });
+                    this.setState({
+                        step: 'scan',
+                    });
+                });
+        } else {
+            this.invalidToken('This is not an XRPTipBot token QRCode!');
         }
 
         this.scanTimeout = setTimeout(() => {
             this.setState({
-                isScanning: false
+                isScanning: false,
             });
-        }, 2000)
-
+        }, 2000);
     };
 
-
     render() {
-        const { step } = this.state ;
+        const { step } = this.state;
         switch (step) {
-            case "scan":
-                return  (
+            case 'scan':
+                return (
                     <View style={[AppStyles.container]}>
                         <Camera
                             style={styles.preview}
-                            onBarCodeRead={(data) => this.handleLogin(data)}
+                            onBarCodeRead={data => this.handleLogin(data)}
                             captureAudio={false}
                             notAuthorizedView={this.notAuthorizedView}
                             permissionDialogTitle="Permission to use camera"
@@ -309,26 +300,27 @@ class AuthView extends Component {
                         </Camera>
                     </View>
                 );
-            case "loading":
-                return(
+            case 'loading':
+                return (
                     <LinearGradient
                         style={[styles.mainContent]}
-                        colors={['#4F00BC' , '#29ABE2']}
-                        start={{x: 0, y: .1}} end={{x: .1, y: 1}}
+                        colors={['#4F00BC', '#29ABE2']}
+                        start={{ x: 0, y: 0.1 }}
+                        end={{ x: 0.1, y: 1 }}
                     >
                         <LottieView
                             source={require('../../assets/animation/loading_semicircle.json')}
-                            style={{ width: 400, height: 400,}}
+                            style={{ width: 400, height: 400 }}
                             autoPlay
                             loop
                             resizeMode={'contain'}
                         />
-                        <Text style={[AppStyles.h5, AppStyles.textCenterAligned, styles.whiteText]}>Connecting account ...</Text>
+                        <Text style={[AppStyles.h5, AppStyles.textCenterAligned, styles.whiteText]}>
+                            Connecting account ...
+                        </Text>
                     </LinearGradient>
-                )
-
+                );
         }
-
     }
 }
 

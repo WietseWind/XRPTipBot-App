@@ -1,5 +1,4 @@
-import {Navigation} from 'react-native-navigation';
-
+import { Navigation } from 'react-native-navigation';
 
 // AUth Screens
 import IntroScreen from '@modules/intro';
@@ -17,8 +16,7 @@ import ContactsScreen from '@modules/contacts';
 import ContactsAddScreen from '@modules/contacts/add';
 import ContactsSelectScreen from '@modules/contacts/select';
 // components
-import {NavBar} from '@components'
-
+import { NavBar } from '@components';
 
 // register all screens of the app (including internal ones)
 export function registerScreens(store, Provider) {
