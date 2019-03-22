@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
     StyleSheet,
     View,
@@ -23,7 +23,7 @@ import { AppSizes, AppColors } from '@theme';
 
 import PropTypes from 'prop-types';
 
-class NumericKeyboard extends Component {
+class NumericKeyboard extends PureComponent {
     static propTypes = {
         keyboardHeader: PropTypes.func,
         value: PropTypes.any,
@@ -62,15 +62,6 @@ class NumericKeyboard extends Component {
             this.setState({
                 caretHidden: true,
             });
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return (
-            this.state.modalVisible != nextState.modalVisible ||
-            this.state.cursorLock != nextState.cursorLock ||
-            this.props.disabled != nextProps.disabled ||
-            this.props.value != nextProps.value
-        );
     }
 
     static getDerivedStateFromProps(props, state) {

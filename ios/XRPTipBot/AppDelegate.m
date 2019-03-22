@@ -1,16 +1,15 @@
 
 #import "AppDelegate.h"
 
-#import <Firebase.h>w
-#import "RNFirebaseNotifications.h"
-#import "RNFirebaseMessaging.h"
-
+#import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
 
+#import <Firebase.h>
+#import "RNFirebaseNotifications.h"
+#import "RNFirebaseMessaging.h"
 #import "RCCManager.h"
-#import <React/RCTRootView.h>
-
 
 
 @implementation AppDelegate
@@ -22,7 +21,6 @@
                       sourceApplication:sourceApplication annotation:annotation];
 }
 
-// Only if your app is using [Universal Links](https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html).
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {

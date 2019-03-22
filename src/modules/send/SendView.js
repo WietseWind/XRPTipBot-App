@@ -162,16 +162,6 @@ class SendView extends Component {
             return;
         }
 
-        if (sendAmount > 20) {
-            CustomAlert.show('Sending amount should be less than 20 XRP', {
-                type: 'error',
-            });
-            this.setState({
-                sendAmount: '20',
-            });
-            return;
-        }
-
         if (!sendTo) {
             return CustomAlert.show('Please set the destination.', {
                 type: 'error',

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import {
     StyleSheet,
     View,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     },
 });
 
-class NumericInput extends Component {
+class NumericInput extends PureComponent {
     constructor(props) {
         super(props);
 
@@ -63,13 +63,6 @@ class NumericInput extends Component {
         this.inputEvent();
 
         this.animation();
-    }
-
-    componentWillReceiveProps(nextProps) {
-        // this.animated.stopAnimation();
-        if (nextProps.cursorLock == false) {
-            this.animation();
-        }
     }
 
     static getDerivedStateFromProps(props, state) {

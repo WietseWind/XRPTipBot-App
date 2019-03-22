@@ -1,5 +1,13 @@
 import React, { PureComponent } from 'react';
-import { StyleSheet, Alert, Platform, TouchableWithoutFeedback, View, Animated } from 'react-native';
+import {
+    StyleSheet,
+    Alert,
+    Platform,
+    TouchableWithoutFeedback,
+    View,
+    Animated,
+    InteractionManager,
+} from 'react-native';
 
 const DOUBLE_PRESS_DELAY = 300;
 const VERSION = '1.4.1';
@@ -11,11 +19,13 @@ export default class NavBar extends PureComponent {
     }
 
     componentDidMount() {
-        Animated.timing(this.fadeIn, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
+        InteractionManager.runAfterInteractions(() => {
+            Animated.timing(this.fadeIn, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        });
     }
 
     handleLogoPress = () => {
