@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { StyleSheet, View, Text, Vibration, Linking, Platform, TouchableOpacity } from 'react-native';
 
 import { Alert, PinInput } from '@components';
-import { AppStyles, AppColors } from '@theme/';
+import { AppStyles, AppColors, AppSizes } from '@theme/';
 
 import { RNCamera as Camera } from 'react-native-camera';
 import LottieView from 'lottie-react-native';
@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     rectangle: {
-        height: 300,
-        width: 300,
+        height: AppSizes.screen.height * 0.35,
+        width: AppSizes.screen.width * 0.35,
         backgroundColor: 'transparent',
     },
     mainContent: {
@@ -310,7 +310,7 @@ class AuthView extends Component {
                     >
                         <LottieView
                             source={require('../../assets/animation/loading_semicircle.json')}
-                            style={{ width: 400, height: 400 }}
+                            style={{ width: AppSizes.screen.width * 0.8 , height: AppSizes.screen.height * 0.8 }}
                             autoPlay
                             loop
                             resizeMode={'contain'}

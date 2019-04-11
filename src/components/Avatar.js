@@ -114,7 +114,7 @@ export default class AvatarImage extends Component {
                     <View
                         style={{
                             marginRight: 10,
-                            borderRadius: PixelRatio.getPixelSizeForLayoutSize(20),
+                            borderRadius: PixelRatio.getPixelSizeForLayoutSize(30),
                             zIndex: 1,
                             overflow: 'hidden',
                         }}
@@ -124,7 +124,7 @@ export default class AvatarImage extends Component {
                             style={{
                                 width: AppSizes.screen.width * 0.1,
                                 height: AppSizes.screen.width * 0.1,
-                                borderRadius: Platform.OS === 'android' ? PixelRatio.getPixelSizeForLayoutSize(20) : 0,
+                                borderRadius: Platform.OS === 'android' ? PixelRatio.getPixelSizeForLayoutSize(30) : 0,
                             }}
                             source={
                                 this.props.source ? this.props.source : require('../assets/images/placeholder.user.png')
@@ -139,7 +139,7 @@ export default class AvatarImage extends Component {
                                 width: AppSizes.screen.width * 0.1,
                                 height: AppSizes.screen.width * 0.1,
                                 opacity: this.state.thumbnailOpacity,
-                                borderRadius: Platform.OS === 'android' ? PixelRatio.getPixelSizeForLayoutSize(20) : 0,
+                                borderRadius: Platform.OS === 'android' ? PixelRatio.getPixelSizeForLayoutSize(30) : 0,
                             }}
                             source={require('../assets/images/placeholder.user.png')}
                         />

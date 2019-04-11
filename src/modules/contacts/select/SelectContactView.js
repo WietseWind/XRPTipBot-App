@@ -2,7 +2,18 @@ import React, { Component } from 'react';
 
 import _ from 'lodash';
 
-import { View, Text, StyleSheet, TouchableHighlight, SectionList, Keyboard, Platform, Animated } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableHighlight,
+    SectionList,
+    Keyboard,
+    Platform,
+    PermissionsAndroid,
+    Alert as NativeAlert,
+    InteractionManager,
+} from 'react-native';
 
 // Consts and Libs
 import { AppStyles, AppColors, AppFonts, AppSizes } from '@theme/';
@@ -15,58 +26,25 @@ import { requestLocationPermission } from '@libs/utils';
 
 /* Component ==================================================================== */
 const styles = StyleSheet.create({
-    avatar: {
-        width: 36,
-        height: 36,
-        marginRight: 10,
-        marginLeft: 10,
-    },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 8,
+        paddingHorizontal: 12,
         paddingVertical: 8,
     },
     name: {
-        fontSize: 16,
+        fontSize: AppStyles.baseText.fontSize,
         fontWeight: Platform.OS === 'ios' ? '500' : '400',
         color: AppColors.textPrimary,
     },
-    address: {
-        fontSize: 11,
-        color: AppColors.textSecondary,
-    },
     sectionHeaderText: {
+        fontSize: AppFonts.base.size,
         fontFamily: AppFonts.familyBold,
-        fontWeight: '700',
+        fontWeight: '400',
         paddingLeft: 8,
-        color: '#000',
+        color: '#696969',
     },
 });
-
-/* Component ==================================================================== */
-
-class ListItem extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            scaleValue: new Animated.Value(0),
-        };
-    }
-
-    componentDidMount() {
-        Animated.timing(this.state.scaleValue, {
-            toValue: 1,
-            duration: 300,
-            delay: this.props.index * 150,
-        }).start();
-    }
-
-    render() {
-        return <Animated.View style={{ opacity: this.state.scaleValue }}>{this.props.children}</Animated.View>;
-    }
-}
 
 /* Component ==================================================================== */
 class SelectContactView extends Component {
@@ -85,6 +63,7 @@ class SelectContactView extends Component {
             dataSource: [],
             lookUpResult: [],
             discoveredUsers: [],
+            filteredDiscoveredUsers: [],
             contacts: props.accountState.contacts || [],
             lookingUp: false,
             searchText: '',
@@ -104,7 +83,6 @@ class SelectContactView extends Component {
         const { accountState } = this.props;
 
         const contacts = accountState.contacts || [];
-
         if (_.isEmpty(contacts)) {
             this.searchBar.focus();
         }
@@ -118,7 +96,7 @@ class SelectContactView extends Component {
         this.keyboardDidShowListener.remove();
         this.keyboardDidHideListener.remove();
 
-        Discovery.setShouldDiscover(false);
+        Discovery.setShouldDiscover(false).catch(() => {});
         Discovery.removeListener('discoveredUsers', this.handleDiscover);
     }
 
@@ -135,57 +113,83 @@ class SelectContactView extends Component {
         });
     };
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.accountState.contacts !== this.props.accountState.contacts) {
-            this.setState({
-                dataSource: this.convertContactsArrayToMap(nextProps.accountState.contacts, []),
-            });
+    showLocationAlert = permRequest => {
+        const { accountState, saveSettings } = this.props;
+        if (accountState.locationAlert === undefined || accountState.locationAlert) {
+            NativeAlert.alert(
+                'Nearby user discovery',
+                'To find other TipBot users around you, you need to have Location Services turned on, and grant the Location Services to the TipBot app.',
+                [
+                    {
+                        text: 'Ok',
+                        onPress: () => {
+                            PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION, {
+                                title: 'Location Permission',
+                                message:
+                                    'XRPTipBot needs access to your location ' +
+                                    'so you can use nearby discovery feature.',
+                                buttonPositive: 'Ok',
+                            });
+                        },
+                        style: 'default',
+                    },
+                    {
+                        text: "Don't remind me",
+                        onPress: () => saveSettings('locationAlert', false),
+                        style: 'destructive',
+                    },
+                ],
+            );
         }
-    }
+    };
 
     discoverNearby = () => {
-        // location permission
-        requestLocationPermission()
-            .then(() => {
-                Discovery.setShouldDiscover(true);
-                Discovery.on('discoveredUsers', this.handleDiscover);
-            })
-            .catch(e => {});
+        // run with delay
+        setTimeout(() => {
+            if (Platform.OS === 'android') {
+                PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION)
+                    .then(granted => {
+                        if (granted) {
+                            Discovery.isLocationEnabled().then(status => {
+                                if (!status) {
+                                    this.showLocationAlert(false);
+                                }
+                            }).catch(() => {});
+                        } else {
+                            this.showLocationAlert(true);
+                        }
+                    })
+                    .catch(err => console.log(err));
+            }
+
+            // enable discovering
+            Discovery.setShouldDiscover(true).catch(() => {});
+            Discovery.on('discoveredUsers', this.handleDiscover);
+        }, 1000);
     };
 
     updateDataSource = () => {
         const { accountState } = this.props;
-        const { lookUpResult, discoveredUsers } = this.state;
+        const { lookUpResult, discoveredUsers, filteredDiscoveredUsers, contacts, searchText } = this.state;
 
-        const contacts = accountState.contacts || [];
+        let dataSource = [
+            { title: 'Contacts', data: contacts || [] },
+            { title: 'Search results', data: lookUpResult || [] },
+        ];
 
-        if (_.isEmpty(contacts) && _.isEmpty(lookUpResult) && _.isEmpty(discoveredUsers)) {
-            this.setState({
-                dataSource: [],
-            });
+        if (searchText && searchText.length > 0) {
+            dataSource.splice(0, 0, { title: 'Nearby', data: filteredDiscoveredUsers });
         } else {
-            let dataSource = [
-                { title: 'Nearby', data: discoveredUsers || [] },
-                { title: 'Contacts', data: contacts || [] },
-                { title: 'Search results', data: lookUpResult || [] },
-            ];
-
-            if (_.isEmpty(lookUpResult)) {
-                dataSource = _.remove(dataSource, function(n) {
-                    return n.title !== 'Search results';
-                });
-            }
-
-            if (_.isEmpty(discoveredUsers)) {
-                dataSource = _.remove(dataSource, function(n) {
-                    return n.title !== 'Nearby';
-                });
-            }
-
-            this.setState({
-                dataSource,
-            });
+            dataSource.splice(0, 0, { title: 'Nearby', data: discoveredUsers || [] });
         }
+
+        dataSource = _.remove(dataSource, function(n) {
+            return !_.isEmpty(n.data);
+        });
+
+        this.setState({
+            dataSource,
+        });
     };
 
     handleDiscover = data => {
@@ -196,8 +200,6 @@ class SelectContactView extends Component {
             let uuids = [];
             let uuidv4s = [];
             data.users.forEach(u => {
-                console.log(accountState.uuidv4)
-                console.log(u.uuid.toLowerCase())
                 if (u.uuid.toLowerCase() !== accountState.uuidv4) {
                     uuids.push(u.uuid.toLowerCase());
                     uuidv4s.push({ uuidv4: u.uuid.toLowerCase() });
@@ -207,10 +209,10 @@ class SelectContactView extends Component {
             const diff = _.differenceBy(uuidv4s, discoveredUsers, 'uuidv4');
 
             if (diff.length > 0) {
-                console.log('Has different update');
                 lookupUsers(uuids).then(res => {
+                    let { data } = res;
                     this.setState({
-                        discoveredUsers: res.data,
+                        discoveredUsers: data || [],
                     });
 
                     this.updateDataSource();
@@ -238,8 +240,8 @@ class SelectContactView extends Component {
 
     renderSectionHeader = ({ section: { title } }) => {
         return (
-            <View style={{ backgroundColor: '#FFF', padding: 2 }}>
-                <Text style={styles.sectionHeaderText}>{title}</Text>
+            <View style={{ backgroundColor: '#f6f6f6', padding: 6 }}>
+                <Text style={styles.sectionHeaderText}>{title.toUpperCase()}</Text>
             </View>
         );
     };
@@ -251,27 +253,30 @@ class SelectContactView extends Component {
             return (
                 <View style={[AppStyles.centerAligned, AppStyles.paddingTop, AppStyles.paddingBottom]} key={index}>
                     <Text style={[AppStyles.subtext, { fontSize: AppStyles.baseText.fontSize }]}>
-                        No matching contacts
+                        No matching found
                     </Text>
                 </View>
             );
         }
 
-        let networkIcon = null;
+        let avatar = null;
         switch (item.n || item.network) {
             case 'twitter':
-                networkIcon = (
+                avatar = (
                     <Avatar
                         onPress={() => {
                             this.onItemPress(item);
                         }}
                         network={'twitter'}
-                        source={{ uri: `https://twitter.com/${item.u || item.username}/profile_image?size=original` }}
+                        source={{
+                            uri: `https://twitter.com/${item.u || item.username}/profile_image?size=original`,
+                            cache: 'default',
+                        }}
                     />
                 );
                 break;
             case 'discord':
-                networkIcon = (
+                avatar = (
                     <Avatar
                         onPress={() => {
                             this.onItemPress(item);
@@ -281,7 +286,7 @@ class SelectContactView extends Component {
                 );
                 break;
             case 'reddit':
-                networkIcon = (
+                avatar = (
                     <Avatar
                         onPress={() => {
                             this.onItemPress(item);
@@ -293,40 +298,51 @@ class SelectContactView extends Component {
         }
 
         return (
-            <ListItem key={index} index={index}>
-                <TouchableHighlight
-                    onPress={() => {
-                        this.onItemPress(item);
-                    }}
-                    underlayColor="#FFF"
-                >
-                    <View style={styles.row}>
-                        {networkIcon}
-                        <Text style={styles.name}>
-                            {item.n || item.network === 'discord' ? item.s || item.slug : item.u || item.username}
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-            </ListItem>
+            <TouchableHighlight
+                onPress={() => {
+                    this.onItemPress(item);
+                }}
+                underlayColor="#FFF"
+            >
+                <View style={styles.row}>
+                    {avatar}
+                    <Text style={styles.name}>
+                        {item.n || item.network === 'discord' ? item.s || item.slug : item.u || item.username}
+                    </Text>
+                </View>
+            </TouchableHighlight>
         );
     };
 
     onSearchChange = text => {
         const { lookupUsers, accountState } = this.props;
+        const { discoveredUsers } = this.state;
 
         clearTimeout(this.lookupTimeout);
 
         this.setState({
             searchText: text,
+            lookingUp: true,
         });
-        const newFilter = [];
+
+        const newFilteredContacts = [];
+        const newFilteredDiscoverd = [];
 
         accountState.contacts.forEach(item => {
             if (
                 item.u.toLowerCase().indexOf(text.toLowerCase()) !== -1 ||
                 item.s.toLowerCase().indexOf(text.toLowerCase()) !== -1
             ) {
-                newFilter.push(item);
+                newFilteredContacts.push(item);
+            }
+        });
+
+        discoveredUsers.forEach(item => {
+            if (
+                item.username.toLowerCase().indexOf(text.toLowerCase()) !== -1 ||
+                item.slug.toLowerCase().indexOf(text.toLowerCase()) !== -1
+            ) {
+                newFilteredDiscoverd.push(item);
             }
         });
 
@@ -343,16 +359,20 @@ class SelectContactView extends Component {
                     });
 
                     this.setState({
-                        contacts: newFilter,
+                        contacts: newFilteredContacts,
                         lookUpResult: lookUpResult,
+                        filteredDiscoveredUsers: newFilteredDiscoverd,
+                        lookingUp: false,
                     });
 
                     this.updateDataSource();
                 });
             } else {
                 this.setState({
-                    contacts: newFilter,
+                    contacts: newFilteredContacts,
+                    filteredDiscoveredUsers: newFilteredDiscoverd,
                     lookUpResult: [],
+                    lookingUp: false,
                 });
 
                 this.updateDataSource();
@@ -388,7 +408,7 @@ class SelectContactView extends Component {
     };
 
     render() {
-        const { dataSource } = this.state;
+        const { dataSource, lookingUp } = this.state;
 
         return (
             <View style={[AppStyles.container]}>
@@ -396,6 +416,7 @@ class SelectContactView extends Component {
                     <View style={[AppStyles.flex6]}>
                         <SearchBar
                             ref={s => (this.searchBar = s)}
+                            isSearching={lookingUp}
                             lightTheme
                             onChangeText={this.onSearchChange}
                             containerStyle={{ backgroundColor: 'transparent' }}

@@ -9,8 +9,9 @@ import {
     InteractionManager,
 } from 'react-native';
 
+import DeviceInfo from 'react-native-device-info';
+
 const DOUBLE_PRESS_DELAY = 300;
-const VERSION = '1.4.1';
 
 export default class NavBar extends PureComponent {
     constructor(props) {
@@ -19,14 +20,21 @@ export default class NavBar extends PureComponent {
     }
 
     componentDidMount() {
-        InteractionManager.runAfterInteractions(() => {
-            Animated.timing(this.fadeIn, {
-                toValue: 1,
-                duration: 300,
-                useNativeDriver: true,
-            }).start();
-        });
+        setTimeout(
+            () => {
+                this.startAnimation();
+            },
+            Platform.OS === 'android' ? 500 : 0,
+        );
     }
+
+    startAnimation = () => {
+        Animated.timing(this.fadeIn, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    };
 
     handleLogoPress = () => {
         const now = new Date().getTime();
@@ -40,7 +48,9 @@ export default class NavBar extends PureComponent {
     };
 
     handleLogoDoublePress = () => {
-        Alert.alert('Version', `XRPTipBot ${VERSION} Latest`);
+        const readableVersion = DeviceInfo.getReadableVersion();
+
+        Alert.alert('Version', `XRPTipBot ${readableVersion}`);
     };
 
     render() {

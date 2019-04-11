@@ -8,7 +8,7 @@ import RootSiblings from 'react-native-root-siblings';
 
 import { AppFonts, AppSizes } from '@theme/';
 
-const BAR_HEIGHT = 35;
+const BAR_HEIGHT = AppSizes.screen.height * 0.05;
 let BACKGROUND_COLOR = '#3DD84C';
 let TOUCHABLE_BACKGROUND_COLOR = '#3DD84C';
 const SLIDE_DURATION = 300;
@@ -42,7 +42,7 @@ const styles = {
         height: BAR_HEIGHT,
         marginBottom: BAR_HEIGHT / 3,
         fontFamily: AppFonts.base.family,
-        fontSize: 15,
+        fontSize: AppFonts.base.size,
         textAlign: 'center',
         color: 'white',
     },
@@ -268,11 +268,13 @@ class Alert extends Component {
     static show = (message, options = { type: types.SUCCESS, duration: durations.LONG }) => {
         this._alert = new RootSiblings();
 
-        return this._alert.update(
+        this._alert.update(
             <AlertContainer {...options} visible instance={this._alert}>
                 {message}
             </AlertContainer>,
         );
+
+        return this._alert;
     };
 
     static hide = alert => {

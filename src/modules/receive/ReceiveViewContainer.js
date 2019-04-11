@@ -15,6 +15,7 @@ const mapDispatchToProps = {
     logout: accountActions.logout,
     disconnect: appActions.disconnect,
     lookupUsers: accountActions.lookupUsers,
+    saveSettings: accountActions.saveSettings,
 };
 
 export default connect(

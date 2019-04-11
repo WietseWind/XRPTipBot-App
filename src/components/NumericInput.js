@@ -13,6 +13,8 @@ import {
 let basePx = Platform.OS === 'ios' ? 750 : 720;
 let { width } = Dimensions.get('window');
 
+import { AppSizes, AppColors, AppFonts } from '@theme';
+
 function px2dp(px) {
     return (px / basePx) * width;
 }
@@ -22,21 +24,22 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     textInputWrap: {
-        height: 40,
+        height: AppSizes.screen.height * 0.1,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         paddingLeft: px2dp(10),
     },
     cursorWrap: {
-        height: 40,
+        height: AppSizes.screen.height * 0.1,
         flexDirection: 'row',
         alignItems: 'center',
     },
     cursor: {
         color: '#3E77E6',
-        fontSize: 25,
+        fontSize: AppFonts.h4.size,
         fontWeight: '300',
+        textAlign: 'center',
     },
     placeholder: {
         color: '#C4C4C4',

@@ -37,9 +37,10 @@ const styles = StyleSheet.create({
     },
     sectionHeaderText: {
         fontFamily: AppFonts.familyBold,
+        fontSize: AppFonts.base.size,
         fontWeight: '700',
         paddingLeft: 8,
-        color: '#478FD5',
+        color: '#696969',
     },
     trashHolder: {
         position: 'absolute',
@@ -271,7 +272,7 @@ class ContactsView extends Component {
 
     renderSectionHeader = ({ section: { title } }) => {
         return (
-            <View style={{ backgroundColor: '#eeeeee', padding: 3 }}>
+            <View style={{ backgroundColor: '#f6f6f6', padding: 3 }}>
                 <Text style={styles.sectionHeaderText}>{title}</Text>
             </View>
         );
@@ -325,7 +326,10 @@ class ContactsView extends Component {
                             this.onItemPress(item);
                         }}
                         network={'twitter'}
-                        source={{ uri: `https://twitter.com/${item.u}/profile_image?size=original` }}
+                        source={{
+                            uri: `https://twitter.com/${item.u}/profile_image?size=original`,
+                            cache: 'default',
+                        }}
                     />
                 );
                 break;

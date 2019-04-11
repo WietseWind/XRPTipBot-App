@@ -242,7 +242,7 @@ class IntroView extends React.Component {
                 >
                     <LottieView
                         source={require('../../assets/animation/loading_semicircle.json')}
-                        style={{ width: 400, height: 400 }}
+                        style={{ width: AppSizes.screen.width * 0.8, height: AppSizes.screen.height * 0.8 }}
                         autoPlay
                         loop
                         resizeMode={'contain'}

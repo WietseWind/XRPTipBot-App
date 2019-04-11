@@ -19,7 +19,7 @@ import {
 
 import NumericInput from './NumericInput';
 
-import { AppSizes, AppColors } from '@theme';
+import { AppSizes, AppColors, AppFonts } from '@theme';
 
 import PropTypes from 'prop-types';
 
@@ -289,15 +289,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingLeft: px2dp(10),
     },
-    cursorWrap: {
-        height: 40,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    cursor: {
-        fontSize: 30,
-        fontWeight: '300',
-    },
     root: {
         flex: 1,
         flexDirection: 'column',
@@ -311,7 +302,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     headerWrap: {
-        height: 42,
+        height: AppSizes.screen.height * 0.065,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -376,13 +367,13 @@ const styles = StyleSheet.create({
     specialNumText: {
         paddingBottom: px2dp(15),
         color: '#000000',
-        fontSize: 26,
+        fontSize: AppFonts.h4.size,
         fontWeight: '900',
     },
     numText: {
         color: '#000000',
-        fontSize: 26,
-        fontWeight: Platform.OS === 'ios' ? '500' : '400',
+        fontSize: AppFonts.h4.size,
+        fontWeight: '400',
     },
     bottomWrap: {
         flexDirection: 'row',

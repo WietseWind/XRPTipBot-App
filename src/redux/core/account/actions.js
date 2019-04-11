@@ -41,6 +41,7 @@ export function login(token, freshLogin) {
                             uid: data.uid,
                             network: data.network,
                             slug: data.slug,
+                            uuidv4: data.uuidv4,
                         },
                     });
                     return resolve(token);
@@ -111,6 +112,7 @@ export function pinLogin(token, pin) {
                                         uid: data.uid,
                                         network: data.network,
                                         slug: data.slug,
+                                        uuidv4: data.uuidv4,
                                     },
                                 });
                                 return resolve('SUCCESS');
@@ -338,4 +340,14 @@ export function logout() {
                 });
             });
     };
+}
+
+export function saveSettings(key, value) {
+    return dispatch =>
+        dispatch({
+            type: types.USER_REPLACE,
+            payload: {
+                [key]: value,
+            },
+        });
 }

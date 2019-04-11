@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     name: {
-        fontSize: 16,
+        fontSize: AppStyles.baseText.fontSize,
         fontWeight: Platform.OS === 'ios' ? '500' : '400',
         color: AppColors.textPrimary,
     },
@@ -142,6 +142,7 @@ class AddContactView extends Component {
 
         this.setState({
             searchText: text,
+            lookingUp: true,
         });
 
         this.lookupTimeout = setTimeout(() => {
@@ -156,12 +157,14 @@ class AddContactView extends Component {
                                 }) < 0 && u.username !== me
                             );
                         }),
+                        lookingUp: false,
                     });
                 });
             } else {
                 this.shouldClearList = true;
                 this.setState({
                     dataSource: [],
+                    lookingUp: false,
                 });
             }
         }, 500);
@@ -179,7 +182,10 @@ class AddContactView extends Component {
                             this.onItemPress(item);
                         }}
                         network={'twitter'}
-                        source={{ uri: `https://twitter.com/${item.username}/profile_image?size=original` }}
+                        source={{
+                            uri: `https://twitter.com/${item.username}/profile_image?size=original`,
+                            cache: 'default',
+                        }}
                     />
                 );
                 break;
@@ -223,7 +229,7 @@ class AddContactView extends Component {
     };
 
     render() {
-        const { dataSource } = this.state;
+        const { dataSource, lookingUp } = this.state;
 
         return (
             <View style={[AppStyles.container, AppStyles.containerCentered]}>
@@ -232,6 +238,7 @@ class AddContactView extends Component {
                         <SearchBar
                             autoFocus={true}
                             lightTheme
+                            isSearching={lookingUp}
                             onChangeText={this.onSearchChange}
                             containerStyle={{ backgroundColor: 'transparent' }}
                             placeHolder="Search TipBot users"

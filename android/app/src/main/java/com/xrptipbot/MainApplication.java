@@ -15,10 +15,8 @@ import com.wix.interactable.Interactable;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
 import com.joshblour.RNDiscovery.RNDiscoveryPackage;
-
-
-import com.xrptipbot.MotionDetectorPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,13 +48,13 @@ public class MainApplication extends NavigationApplication implements ShareAppli
                 new RNCameraPackage(),
                 new LottiePackage(),
                 new RNDeviceInfo(),
-                new MotionDetectorPackage(),
                 new RNSharePackage(),
                 new RNViewShotPackage(),
                 new Interactable(),
                 new RNFirebasePackage(),
                 new RNFirebaseMessagingPackage(),
                 new RNFirebaseNotificationsPackage(),
+                new RNFirebaseCrashlyticsPackage(),
                 new RNDiscoveryPackage()
 
         );

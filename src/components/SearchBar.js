@@ -4,13 +4,14 @@ import PropTypes from 'prop-types';
 
 // Consts and Libs
 import { AppStyles, AppColors, AppSizes } from '@theme/';
+import { LoadingIndicator } from '@components/';
 
 const styles = StyleSheet.create({
     input: {
-        height: AppSizes.screen.width * 0.14,
+        height: AppSizes.screen.width * 0.12,
         paddingHorizontal: 10,
         paddingRight: 30,
-        fontSize: AppStyles.h5.fontSize,
+        fontSize: AppStyles.baseText.fontSize,
     },
     icon: {
         tintColor: '#AFBCD8',
@@ -42,7 +43,13 @@ export default class SearchBar extends Component {
     render() {
         const { placeHolder, backgroundColor, innerBackground, border, radius, onChangeText, inputStyle } = this.props;
         return (
-            <View style={[AppStyles.row, AppStyles.paddingLeftSml, { backgroundColor }]}>
+            <View
+                style={[
+                    AppStyles.row,
+                    AppStyles.paddingLeftSml,
+                    { backgroundColor, borderBottomColor: '#a4a4a4', borderBottomWidth: StyleSheet.hairlineWidth },
+                ]}
+            >
                 <View style={[AppStyles.flex1, AppStyles.centerAligned]}>
                     <Image source={require('../assets/images/search.png')} style={styles.icon} />
                 </View>
@@ -69,12 +76,16 @@ export default class SearchBar extends Component {
                         underlineColorAndroid="rgba(0,0,0,0)"
                     />
                 </View>
+
+                <View style={[AppStyles.flex1, AppStyles.centerAligned]}>
+                    {this.props.isSearching && <LoadingIndicator style={{}} />}
+                </View>
             </View>
         );
     }
 }
 SearchBar.defaultProps = {
-    placeHolder: 'SearchBar messages',
+    placeHolder: 'Search',
     backgroundColor: '#F7F9FE',
     innerBackground: '#F7F9FE',
     radius: 5,

@@ -253,8 +253,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     rectangle: {
-        height: 300,
-        width: 300,
+        height: AppSizes.screen.height * 0.35,
+        width: AppSizes.screen.width * 0.35,
         backgroundColor: 'transparent',
     },
     preview: {

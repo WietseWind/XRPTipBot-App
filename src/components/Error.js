@@ -93,7 +93,7 @@ export default class Error extends Component {
                     AppStyles.container,
                     AppStyles.flex1,
                     AppStyles.centerAligned,
-                    { paddingBottom: this.fromBottom },
+                    { paddingBottom: this.fromBottom, paddingTop: 20 },
                 ]}
             >
                 <Text style={[AppStyles.baseText, AppStyles.textCenterAligned, { color: AppColors.textSecondary }]}>

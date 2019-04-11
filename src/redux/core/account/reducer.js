@@ -10,6 +10,8 @@ const initialState = Immutable({
     contacts: [],
     mustTip: [],
     balance: 0,
+    bluetoothAlert: true,
+    locationAlert: true,
 });
 
 export default function AccountStateReducer(state = initialState, action = {}) {

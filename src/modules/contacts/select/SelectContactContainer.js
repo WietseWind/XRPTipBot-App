@@ -10,6 +10,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
     lookupUsers: accountActions.lookupUsers,
+    saveSettings: accountActions.saveSettings,
 };
 
 export default connect(

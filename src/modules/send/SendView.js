@@ -1,8 +1,9 @@
+import _ from 'lodash';
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-    Alert,
     View,
     StyleSheet,
     Text,
@@ -16,9 +17,7 @@ import {
 
 import { AppStyles, AppColors, AppSizes, AppFonts } from '@theme/';
 
-import { Alert as CustomAlert, Spacer, NumericKeyboard } from '@components';
-
-import _ from 'lodash';
+import { Alert, Spacer, NumericKeyboard } from '@components';
 
 import LottieView from 'lottie-react-native';
 
@@ -153,7 +152,7 @@ class SendView extends Component {
         // Keyboard.dismiss();
 
         if (!sendAmount || sendAmount <= 0) {
-            CustomAlert.show('Minimum tip amount: 0.000001 XRP', {
+            Alert.show('Minimum tip amount: 0.000001 XRP', {
                 type: 'error',
             });
             this.setState({
@@ -163,9 +162,10 @@ class SendView extends Component {
         }
 
         if (!sendTo) {
-            return CustomAlert.show('Please set the destination.', {
+            Alert.show('Please set the destination.', {
                 type: 'error',
             });
+            return;
         }
 
         this.setState({
@@ -342,7 +342,12 @@ class SendView extends Component {
             <ScrollView
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={[AppStyles.row, AppStyles.paddingRight, AppStyles.paddingLeftSml]}
+                contentContainerStyle={[
+                    AppStyles.row,
+                    AppStyles.paddingRight,
+                    AppStyles.paddingLeftSml,
+                    AppStyles.contentContainerStyle,
+                ]}
             >
                 {mustTips.reverse().map((item, index) => {
                     return (
@@ -353,10 +358,10 @@ class SendView extends Component {
                                 this.setState({ sendAmount: item.amount });
                             }}
                             style={[
-                                AppStyles.centerAligned,
+                                AppStyles.contentContainerStyle,
                                 {
                                     backgroundColor: AppColors.brand.light,
-                                    borderRadius: 20,
+                                    borderRadius: AppSizes.screen.width * 0.7 * AppSizes.screen.height * 0.1,
                                     paddingRight: 10,
                                     paddingLeft: 10,
                                     marginRight: 5,
@@ -397,7 +402,6 @@ class SendView extends Component {
                             <Text style={[AppStyles.h5, AppStyles.strong, AppStyles.textCenterAligned]}>
                                 Set the amount you want to tip
                             </Text>
-                            <Text style={[AppStyles.baseText, AppStyles.textCenterAligned]}>Max. amount is 20 XRP</Text>
                             <Spacer size={20} />
 
                             <NumericKeyboard
@@ -416,19 +420,6 @@ class SendView extends Component {
                                 regs={this.parseAmount.bind(this)}
                                 keyboardHeader={this.renderKeyboardHeader}
                             />
-                            {/*<TextInput*/}
-                            {/*style={[styles.amountInput, AppStyles.baseText]}*/}
-                            {/*autoCorrect={false}*/}
-                            {/*returnKeyType='done'*/}
-                            {/*placeholder={'Set the amount'}*/}
-                            {/*keyboardType={this.getKeyboardType()}*/}
-                            {/*placeholderTextColor={'#AFBCD8'}*/}
-                            {/*underlineColorAndroid='transparent'*/}
-                            {/*value={sendAmount.toString()}*/}
-                            {/*onChangeText={this.onChangeAmount}*/}
-                            {/*ref={(r) => { this.textInput = r; }}*/}
-                            {/*/>*/}
-
                             <Spacer size={80} />
                         </View>
 
@@ -450,12 +441,12 @@ class SendView extends Component {
                     >
                         <LottieView
                             source={require('../../assets/animation/spinner.json')}
-                            style={{ width: 400, height: 400 }}
+                            style={{ width: AppSizes.screen.width * 0.5, height: AppSizes.screen.height * 0.5 }}
                             autoPlay
                             loop
-                            resizeMode={'contain'}
+                            resizeMode={'cover'}
                         />
-                        <Text style={[AppStyles.h5, AppStyles.textCenterAligned, styles.whiteText]}>
+                        <Text style={[AppStyles.h4, AppStyles.textCenterAligned, styles.whiteText]}>
                             Sending Tip ...
                         </Text>
                     </LinearGradient>
@@ -490,7 +481,7 @@ class SendView extends Component {
                     >
                         <LottieView
                             source={require('../../assets/animation/simple_tick.json')}
-                            style={{ width: AppSizes.screen.width * 0.5, height: AppSizes.screen.height * 0.5 }}
+                            style={{ width: AppSizes.screen.width * 0.45, height: AppSizes.screen.height * 0.45 }}
                             autoPlay
                             loop={false}
                             resizeMode={'cover'}
@@ -535,7 +526,7 @@ const styles = StyleSheet.create({
         borderColor: '#c6c6c6',
         borderWidth: 1,
         flexDirection: 'row',
-        borderRadius: 40,
+        borderRadius: AppSizes.screen.width * 0.7 * AppSizes.screen.height * 0.1,
         overflow: 'hidden',
         backgroundColor: AppColors.segmentButton.background,
         height: AppSizes.screen.height * 0.08,

@@ -18,8 +18,10 @@ import { AppStyles, AppColors, AppSizes, AppFonts } from '@theme/';
 import { RNCamera as Camera } from 'react-native-camera';
 import LottieView from 'lottie-react-native';
 
+import { findGetParameter } from '@libs/utils';
+
 const URL_REGEX = /rPEPPER7kfTD9w2To4CQk6UCfuHM9c6GDY/i;
-const TIPBOT_REGEX = RegExp('(xrptipbot:\\/\\/)(twitter|reddit|discord|internal)(\\/)((?!activate)[^\\/\\?]+)');
+const TIPBOT_REGEX = RegExp('(xrptipbot:\\/\\/)(twitter|reddit|discord|internal|coil)(\\/)((?!activate)[^\\/\\?]+)');
 
 class SendScanView extends Component {
     static displayName = 'SendScanView';
@@ -76,18 +78,6 @@ class SendScanView extends Component {
         </View>
     );
 
-    findGetParameter = (text, parameterName) => {
-        let result = null,
-            tmp = [];
-        let items = text.split('?');
-        for (let index = 0; index < items.length; index++) {
-            tmp = items[index].split('=');
-            if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-        }
-
-        return result;
-    };
-
     onBarCodeRead = scanned => {
         const { data } = scanned;
 
@@ -126,7 +116,7 @@ class SendScanView extends Component {
             this.scanned = true;
             const username = data.split(TIPBOT_REGEX)[4];
             const network = data.split(TIPBOT_REGEX)[2];
-            const sendAmount = this.findGetParameter(data, 'amount');
+            const sendAmount = findGetParameter(data, 'amount');
 
             switch (network) {
                 case 'discord':
@@ -223,8 +213,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
     },
     rectangle: {
-        height: 300,
-        width: 300,
+        height: AppSizes.screen.height * 0.35,
+        width: AppSizes.screen.width * 0.35,
         backgroundColor: 'transparent',
     },
     preview: {
@@ -253,8 +243,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     animation: {
-        width: 200,
-        height: 200,
+        width: AppSizes.screen.width * 0.4,
+        height: AppSizes.screen.height * 0.4,
     },
     loading: {
         position: 'absolute',

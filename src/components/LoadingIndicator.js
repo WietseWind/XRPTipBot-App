@@ -1,19 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { ActivityIndicator, ViewPropTypes } from 'react-native';
+import { ActivityIndicator, ViewPropTypes, Platform } from 'react-native';
 
-const LoadingIndicator = ({ style, color }) => (
-    <ActivityIndicator size="small" animating color={color} style={{ paddingVertical: 20 }} />
+const LoadingIndicator = ({ style, color, size }) => (
+    <ActivityIndicator size={size} animating color={color} style={style} />
 );
 
 LoadingIndicator.propTypes = {
     style: ViewPropTypes.style,
     color: PropTypes.string,
+    size: PropTypes.string,
 };
 
 LoadingIndicator.defaultProps = {
     color: '#3D7CD2',
+    size: Platform.OS === 'android' ? 20 : 'small',
+    style: {
+        paddingVertical: 20,
+    },
 };
 
 export default LoadingIndicator;

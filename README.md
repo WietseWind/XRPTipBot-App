@@ -1,6 +1,6 @@
 # XRPTipBot-App
 
-[![React-Native](https://img.shields.io/badge/react--native-0.59.1-green.svg)](https://facebook.github.io/react-native)
+[![React-Native](https://img.shields.io/badge/react--native-0.59.3-green.svg)](https://facebook.github.io/react-native)
 ![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 
 XRPTipBot iOS and Android app.

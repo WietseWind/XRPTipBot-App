@@ -23,7 +23,7 @@ import Share from 'react-native-share';
 import firebase from 'react-native-firebase';
 import Discovery from 'react-native-discovery';
 
-import { requestExternalStoragePermission } from '@libs/utils';
+import { requestExternalStoragePermission, findGetParameter } from '@libs/utils';
 
 // components
 import ActionSheet from '@expo/react-native-action-sheet';
@@ -39,7 +39,9 @@ class ReceiveView extends Component {
 
         this.state = {
             loadingBalance: false,
-            showBalance: true
+            initialize: true,
+            showBalance: true,
+            discoveryInitialized: false,
         };
 
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
@@ -81,15 +83,6 @@ class ReceiveView extends Component {
     }
 
     componentWillMount() {
-        setTimeout(() => {
-            this.props.navigator.setStyle({
-                navBarCustomView: 'xrptipbot.NavBar',
-                navBarCustomViewInitialProps: {
-                    ts: new Date().getTime(),
-                },
-            });
-        }, 100);
-
         if (Platform.OS === 'ios') {
             Linking.getInitialURL()
                 .then(url => {
@@ -103,44 +96,45 @@ class ReceiveView extends Component {
     }
 
     componentDidMount() {
-        const { accountState } = this.props;
+        const { accountState, navigator } = this.props;
 
-        this.props.navigator.setTabButton({
+        // init the center tab text
+        navigator.setTabButton({
             tabIndex: 1,
             label: accountState.network === 'internal' ? 'TipBot' : accountState.slug,
         });
+
+        // set navbar component
+        // as in android there is some bug on this we need to set timeout
+        setTimeout(() => {
+            this.props.navigator.setStyle({
+                navBarCustomView: 'xrptipbot.NavBar',
+                navBarCustomViewInitialProps: {
+                    ts: new Date().getTime(),
+                },
+            });
+        }, 400);
+
+        setTimeout(() => {
+            this.checkBluetooth();
+            // enable discovery;
+            // this will enable advisering so other users can find this users as nearby user
+            this.enableDiscovery();
+        }, 1000);
 
         // fetch user balance
         this.fetchBalance();
 
         // request for require permission
-        this.requestPermissions();
-
-        // check Bluetooth status
-        this.checkBluetooth();
-
-        // enable discovery;
-        this.enableDiscovery();
+        this.checkNotificationPermission();
     }
-
-    findGetParameter = (text, parameterName) => {
-        let result = null,
-            tmp = [];
-        let items = text.split('?');
-        for (let index = 0; index < items.length; index++) {
-            tmp = items[index].split('=');
-            if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-        }
-
-        return result || '';
-    };
 
     _handleDeepLink = event => {
         const { url } = event;
         if (TIPBOT_REGEX.test(url)) {
             const username = url.split(TIPBOT_REGEX)[4];
             const network = url.split(TIPBOT_REGEX)[2];
-            const sendAmount = this.findGetParameter(url, 'amount');
+            const sendAmount = findGetParameter(url, 'amount');
             switch (network) {
                 case 'discord':
                     this.props.lookupUsers(username).then(res => {
@@ -165,17 +159,50 @@ class ReceiveView extends Component {
         }
     };
 
+    checkBluetooth = () => {
+        const { accountState, saveSettings } = this.props;
+        // check Bluetooth status
+        Discovery.isBluetoothEnabled()
+            .then(status => {
+                // if disabled
+                if (status !== true) {
+                    if (accountState.bluetoothAlert === undefined || accountState.bluetoothAlert) {
+                        Alert.alert(
+                            'Nearby user discovery',
+                            'The App can discover nearby TipBot users, so it’s easy to send each other tips if you’re standing next to each other. For other users to find you, Bluetooth should be turned on',
+                            [
+                                {
+                                    text: Platform.OS === 'android' ? 'Turn Bluetooth on' : 'Ok',
+                                    onPress: () => (Platform.OS === 'android' ? Discovery.setBluetoothOn() : null),
+                                    style: 'default',
+                                },
+                                {
+                                    text: "Don't remind me",
+                                    onPress: () => saveSettings('bluetoothAlert', false),
+                                    style: 'destructive',
+                                },
+                            ],
+                        );
+                    }
+                }
+            })
+            .catch(() => {});
+    };
+
     enableDiscovery = () => {
         const { accountState } = this.props;
-
-        if(accountState.uuidv4 ){
-            Discovery.initialize(accountState.uuidv4, 'XRPTIP').then(uuid => {
-                Discovery.setShouldAdvertise(true);
-            });
+        const { discoveryInitialized } = this.state;
+        if (accountState.uuidv4 && !discoveryInitialized) {
+            Discovery.initialize(accountState.uuidv4, 'XRPTIP')
+                .then(uuid => {
+                    this.setState({ discoveryInitialized: true });
+                    Discovery.setShouldAdvertise(true).catch(() => {});
+                })
+                .catch(() => {});
         }
-    }
+    };
 
-    async requestPermissions() {
+    async checkNotificationPermission() {
         // notifications permission
         try {
             await firebase.messaging().requestPermission();
@@ -185,25 +212,24 @@ class ReceiveView extends Component {
         }
     }
 
-    checkBluetooth = () => {
-        if (Platform.OS === 'android') {
-            Discovery.getBluetoothState(status => {
-                if (status !== true) {
-                    Discovery.setBluetoothOn(() => {});
-                }
-            });
-        }
-    };
-
     fetchBalance = () => {
+        const { discoveryInitialized } = this.state;
+        // set loading at first
         this.setState({
             loadingBalance: true,
         });
+        // get blaance
         this.props
             .getBalance()
             .then(() => {
+                // for the old users this will be needed
+                if (!discoveryInitialized) {
+                    this.enableDiscovery();
+                }
+                // loading false
                 this.setState({
                     loadingBalance: false,
+                    initialize: false,
                 });
             })
             .catch(error => {
@@ -368,7 +394,7 @@ class ReceiveView extends Component {
 
     render() {
         const { accountState } = this.props;
-        const { loadingBalance, showBalance } = this.state;
+        const { loadingBalance, showBalance, initialize } = this.state;
         return (
             <ActionSheet
                 ref={component => {
@@ -378,7 +404,10 @@ class ReceiveView extends Component {
                 <ScrollView
                     contentContainerStyle={[AppStyles.container]}
                     refreshControl={
-                        <RefreshControl onRefresh={() => this.fetchBalance()} refreshing={this.state.loadingBalance} />
+                        <RefreshControl
+                            onRefresh={() => this.fetchBalance()}
+                            refreshing={loadingBalance && !initialize}
+                        />
                     }
                 >
                     <View
@@ -505,7 +534,7 @@ const styles = StyleSheet.create({
         borderColor: '#c6c6c6',
         borderWidth: 1,
         flexDirection: 'row',
-        borderRadius: 40,
+        borderRadius: AppSizes.screen.width * 0.7 * AppSizes.screen.height * 0.1,
         overflow: 'hidden',
         backgroundColor: AppColors.segmentButton.background,
         height: AppSizes.screen.height * 0.08,

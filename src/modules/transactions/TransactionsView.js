@@ -311,7 +311,10 @@ class TransactionsView extends Component {
                                 this.onItemClick(tx);
                             }}
                             network={'twitter'}
-                            source={{ uri: `https://twitter.com/${tx.to_user}/profile_image?size=original` }}
+                            source={{
+                                uri: `https://twitter.com/${tx.to_user}/profile_image?size=original`,
+                                cache: 'default',
+                            }}
                         />
                     );
                     break;
@@ -364,7 +367,10 @@ class TransactionsView extends Component {
                                 this.onItemClick(tx);
                             }}
                             network={'twitter'}
-                            source={{ uri: `https://twitter.com/${tx.from_user}/profile_image?size=original` }}
+                            source={{
+                                uri: `https://twitter.com/${tx.from_user}/profile_image?size=original`,
+                                cache: 'default',
+                            }}
                         />
                     );
                     break;
@@ -531,8 +537,8 @@ const styles = StyleSheet.create({
     },
     rowContainer: {
         padding: 10,
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingLeft: 15,
+        paddingRight: 15,
         justifyContent: 'space-between',
         borderBottomWidth: 0.5,
         borderBottomColor: '#cfcfcf',
