@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.4.1</string>
+	<string>1.5.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -30,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>6</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -42,10 +42,14 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This will allow other nearby tipbot users discover you</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Pair Devices with XRPTipBot Account</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Discover nearby tipbot users</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Discover nearby tipbot users</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save QRCode To Gallery</string>
 	<key>NSPhotoLibraryUsageDescription</key>
