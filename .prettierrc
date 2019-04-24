@@ -3,5 +3,5 @@
     "tabWidth": 4,
     "parser": "flow",
     "singleQuote": true,
-    "trailingComma": "all",
-  }
+    "trailingComma": "all"
+}
