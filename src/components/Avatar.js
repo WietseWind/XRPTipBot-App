@@ -76,6 +76,20 @@ export default class AvatarImage extends Component {
                 );
                 backgroundColor = '#1DA1F2';
                 break;
+            case 'coil':
+                Icon = (
+                    <Image
+                        style={[
+                            {
+                                width: AppSizes.screen.width * 0.04,
+                                height: AppSizes.screen.width * 0.04,
+                            },
+                        ]}
+                        resizeMode={'contain'}
+                        source={require('../assets/images/coil.png')}
+                    />
+                );
+                break;
         }
 
         return (

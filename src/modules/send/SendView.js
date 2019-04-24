@@ -240,6 +240,9 @@ class SendView extends Component {
                 case 'internal':
                     networkIcon = <Image style={[iconStyle]} source={require('../../assets/images/internal.png')} />;
                     break;
+                case 'coil':
+                    networkIcon = <Image style={[iconStyle]} source={require('../../assets/images/coil.png')} />;
+                    break;
             }
 
             return (
@@ -247,9 +250,7 @@ class SendView extends Component {
                     <View style={[AppStyles.flex1, { paddingLeft: 15 }]}>{networkIcon}</View>
                     <View style={[AppStyles.flex4, AppStyles.centerAligned]}>
                         <Text style={[AppStyles.baseText, AppStyles.strong]}>
-                            {sendTo.network === 'discord' || sendTo.network === 'internal'
-                                ? sendTo.slug
-                                : sendTo.username}
+                            {['coil', 'discord', 'coil'].indexOf !== -1 ? sendTo.slug : sendTo.username}
                         </Text>
                     </View>
                     <TouchableOpacity
@@ -488,7 +489,7 @@ class SendView extends Component {
                         />
                         <Text style={[AppStyles.h5, AppStyles.textCenterAligned, styles.whiteText]}>
                             Successfully Sent {sendAmount.startsWith('.') ? '0' + sendAmount : sendAmount} XRP{' '}
-                            {sendTo.network === 'internal'
+                            {['internal', 'coil'].indexOf(sendTo.network) !== -1
                                 ? ''
                                 : sendTo.network === 'discord'
                                 ? `to ${sendTo.slug}`

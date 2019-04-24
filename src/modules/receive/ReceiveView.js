@@ -29,7 +29,7 @@ import { requestExternalStoragePermission, findGetParameter } from '@libs/utils'
 import ActionSheet from '@expo/react-native-action-sheet';
 import { LoadingIndicator, SegmentButton, QRCode } from '@components';
 
-const TIPBOT_REGEX = RegExp('(xrptipbot:\\/\\/)(twitter|reddit|discord|internal)(\\/)((?!activate)[^\\/\\?]+)');
+const TIPBOT_REGEX = RegExp('(xrptipbot:\\/\\/)(twitter|coil|reddit|discord|internal)(\\/)((?!activate)[^\\/\\?]+)');
 
 class ReceiveView extends Component {
     static displayName = 'ReceiveView';
@@ -99,9 +99,23 @@ class ReceiveView extends Component {
         const { accountState, navigator } = this.props;
 
         // init the center tab text
+
+        let label = accountState.slug;
+
+        switch (accountState.network) {
+            case 'internal':
+                label = 'TipBot';
+                break;
+            case 'coil':
+                label = 'Coil Account';
+                break;
+            default:
+                label = accountState.slug;
+                break;
+        }
         navigator.setTabButton({
             tabIndex: 1,
-            label: accountState.network === 'internal' ? 'TipBot' : accountState.slug,
+            label: label,
         });
 
         // set navbar component
@@ -150,6 +164,12 @@ class ReceiveView extends Component {
                 case 'internal':
                     this.showSendScreen({
                         sendTo: { username, network, slug: 'Paper Account' },
+                        sendAmount,
+                    });
+                    break;
+                case 'coil':
+                    this.showSendScreen({
+                        sendTo: { username, network, slug: 'Coil Account' },
                         sendAmount,
                     });
                     break;

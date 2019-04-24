@@ -191,6 +191,25 @@ class TransactionsView extends Component {
 
         if (Platform.OS === 'ios') this.props.navigator.toggleTabs({ to: 'hidden' });
 
+        let slug = '';
+
+        if (['coil', 'internal'].indexOf(network) !== -1) {
+            switch (network) {
+                case 'internal':
+                    slug = 'Paper Account';
+                    break;
+                case 'coil':
+                    slug = 'Coil Account';
+                    break;
+            }
+        } else {
+            if (accountState.uid !== tx.to_user) {
+                slug = network === 'discord' ? tx.userid : tx.to_user;
+            } else {
+                slug = network === 'discord' ? tx.userid : tx.from_user;
+            }
+        }
+
         this.props.navigator.push({
             screen: 'xrptipbot.SendScreen',
             backButtonTitle: 'Cancel',
@@ -202,18 +221,7 @@ class TransactionsView extends Component {
                 sendTo: {
                     username: accountState.uid !== tx.to_user ? tx.to_user : tx.from_user,
                     network: accountState.uid !== tx.to_user ? tx._details.to.n : tx._details.from.n,
-                    slug:
-                        accountState.uid !== tx.to_user
-                            ? network === 'internal'
-                                ? 'Paper Account'
-                                : network === 'discord'
-                                ? tx.userid
-                                : tx.to_user
-                            : network === 'internal'
-                            ? 'Paper Account'
-                            : network === 'discord'
-                            ? tx.userid
-                            : tx.from_user,
+                    slug,
                 },
             },
         });
@@ -233,12 +241,12 @@ class TransactionsView extends Component {
             !_.find(contacts, function(o) {
                 return o.u === searchFor;
             }) &&
-            network !== 'internal'
+            ['internal', 'coil'].indexOf(network) === -1
         ) {
             options.push('Add to contacts');
             addToContactsIndex = options.length - 1;
         }
-        if (network !== 'discord' && network !== 'internal') {
+        if (['internal', 'coil', 'discord'].indexOf(network) === -1) {
             options.push('Open profile (browser)');
             openProfileIndex = options.length - 1;
         }
@@ -348,6 +356,16 @@ class TransactionsView extends Component {
                         />
                     );
                     break;
+                case 'coil':
+                    networkIcon = (
+                        <Avatar
+                            onPress={() => {
+                                this.onItemClick(tx);
+                            }}
+                            network={'coil'}
+                        />
+                    );
+                    break;
             }
         } else {
             // Income Transaction
@@ -404,22 +422,39 @@ class TransactionsView extends Component {
                         />
                     );
                     break;
+                case 'coil':
+                    networkIcon = (
+                        <Avatar
+                            onPress={() => {
+                                this.onItemClick(tx);
+                            }}
+                            network={'coil'}
+                        />
+                    );
+                    break;
             }
         }
 
         const network = accountState.uid !== tx.to_user ? tx._details.to.n : tx._details.from.n;
-        const showName =
-            accountState.uid !== tx.to_user
-                ? network === 'internal'
-                    ? 'Paper Account'
-                    : network === 'discord'
-                    ? tx.userid
-                    : tx.to_user
-                : network === 'internal'
-                ? 'Paper Account'
-                : network === 'discord'
-                ? tx.userid
-                : tx.from_user;
+
+        let showName = '';
+
+        if (['coil', 'internal'].indexOf(network) !== -1) {
+            switch (network) {
+                case 'internal':
+                    showName = 'Paper Account';
+                    break;
+                case 'coil':
+                    showName = 'Coil Account';
+                    break;
+            }
+        } else {
+            if (accountState.uid !== tx.to_user) {
+                showName = network === 'discord' ? tx.userid : tx.to_user;
+            } else {
+                showName = network === 'discord' ? tx.userid : tx.from_user;
+            }
+        }
 
         return (
             <TouchableHighlight

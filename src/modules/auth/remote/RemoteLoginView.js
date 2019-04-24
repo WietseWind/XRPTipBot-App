@@ -9,6 +9,22 @@ import { AppStyles, AppColors, AppSizes, AppFonts } from '@theme/';
 import LottieView from 'lottie-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
+const patchPostMessageFunction = function() {
+    var originalPostMessage = window.postMessage;
+
+    var patchedPostMessage = function(message, targetOrigin, transfer) {
+        originalPostMessage(message, targetOrigin, transfer);
+    };
+
+    patchedPostMessage.toString = function() {
+        return String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage');
+    };
+
+    window.postMessage = patchedPostMessage;
+};
+
+const patchPostMessageJsCode = '(' + String(patchPostMessageFunction) + ')();';
+
 class RemoteLoginView extends Component {
     static displayName = 'RemoteLoginView';
 
@@ -17,6 +33,7 @@ class RemoteLoginView extends Component {
 
         this.state = {
             isLoading: true,
+            loaded: false,
             step: 'login',
         };
     }
@@ -90,11 +107,12 @@ class RemoteLoginView extends Component {
     };
 
     render() {
-        const { step } = this.state;
+        const { step, isLoading } = this.state;
         switch (step) {
             case 'login':
                 return (
                     <WebView
+                        injectedJavaScript={!isLoading ? patchPostMessageJsCode : null}
                         originWhitelist={['*']}
                         onLoad={() => this.setState({ isLoading: false })}
                         source={{
@@ -102,7 +120,7 @@ class RemoteLoginView extends Component {
                             headers: { XRPTIPBOT: 'TRUE' },
                         }}
                         startInLoadingState={true}
-                        onMessage={this.onMessage}
+                        onMessage={isLoading ? null : this.onMessage}
                         style={{ flex: 1 }}
                         renderLoading={() => {
                             return this.renderSpinner();

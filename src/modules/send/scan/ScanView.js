@@ -147,6 +147,13 @@ class SendScanView extends Component {
                         sendAmount,
                     });
                     break;
+                case 'coil':
+                    this.props.navigator.pop();
+                    this.props.onSuccessRead({
+                        sendTo: { username, network, slug: 'Coil Account' },
+                        sendAmount,
+                    });
+                    break;
                 default:
                     this.props.navigator.pop();
                     this.props.onSuccessRead({ sendTo: { username, network }, sendAmount });
