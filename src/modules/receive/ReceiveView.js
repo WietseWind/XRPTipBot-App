@@ -83,6 +83,7 @@ class ReceiveView extends Component {
     }
 
     componentWillMount() {
+        Linking.addEventListener('url', this._handleDeepLink);
         if (Platform.OS === 'ios') {
             Linking.getInitialURL()
                 .then(url => {
@@ -92,16 +93,13 @@ class ReceiveView extends Component {
                 })
                 .catch(err => console.error('An error occurred', err));
         }
-        Linking.addEventListener('url', this._handleDeepLink);
     }
 
     componentDidMount() {
         const { accountState, navigator } = this.props;
 
         // init the center tab text
-
         let label = accountState.slug;
-
         switch (accountState.network) {
             case 'internal':
                 label = 'TipBot';
@@ -113,22 +111,22 @@ class ReceiveView extends Component {
                 label = accountState.slug;
                 break;
         }
-        navigator.setTabButton({
-            tabIndex: 1,
-            label: label,
-        });
+        navigator.setTabButton({ tabIndex: 1, label: label });
 
         // set navbar component
         // as in android there is some bug on this we need to set timeout
-        setTimeout(() => {
-            this.props.navigator.setStyle({
-                navBarCustomView: 'xrptipbot.NavBar',
-                navBarCustomViewInitialProps: {
-                    ts: new Date().getTime(),
-                },
-            });
-        }, 400);
+        // if (Platform.OS === 'android') {
+        //     setTimeout(() => {
+        //         this.props.navigator.setStyle({
+        //             navBarCustomView: 'xrptipbot.NavBar',
+        //             navBarCustomViewInitialProps: {
+        //                 ts: new Date().getTime(),
+        //             },
+        //         });
+        //     }, 400);
+        // }
 
+        // check bluetooth and enable discovery
         setTimeout(() => {
             this.checkBluetooth();
             // enable discovery;
@@ -154,27 +152,37 @@ class ReceiveView extends Component {
                     this.props.lookupUsers(username).then(res => {
                         if (res.data.length === 1) {
                             const user = res.data[0];
-                            this.showSendScreen({
-                                sendTo: { username: user.username, slug: user.slug, network: user.network },
-                                sendAmount,
-                            });
+                            setTimeout(() => {
+                                this.showSendScreen({
+                                    sendTo: { username: user.username, slug: user.slug, network: user.network },
+                                    sendAmount,
+                                });
+                            }, 1000);
                         }
                     });
                     break;
                 case 'internal':
-                    this.showSendScreen({
-                        sendTo: { username, network, slug: 'Paper Account' },
-                        sendAmount,
-                    });
+                    setTimeout(() => {
+                        this.showSendScreen({
+                            sendTo: { username, network, slug: 'Paper Account' },
+                            sendAmount,
+                        });
+                    }, 1000);
+
                     break;
                 case 'coil':
-                    this.showSendScreen({
-                        sendTo: { username, network, slug: 'Coil Account' },
-                        sendAmount,
-                    });
+                    setTimeout(() => {
+                        this.showSendScreen({
+                            sendTo: { username, network, slug: 'Coil Account' },
+                            sendAmount,
+                        });
+                    }, 1000);
+
                     break;
                 default:
-                    this.showSendScreen({ sendTo: { username, network }, sendAmount });
+                    setTimeout(() => {
+                        this.showSendScreen({ sendTo: { username, network }, sendAmount });
+                    }, 1000);
             }
         }
     };

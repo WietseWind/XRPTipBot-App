@@ -20,12 +20,9 @@ export default class NavBar extends PureComponent {
     }
 
     componentDidMount() {
-        setTimeout(
-            () => {
-                this.startAnimation();
-            },
-            Platform.OS === 'android' ? 500 : 0,
-        );
+        setTimeout(() => {
+            this.startAnimation();
+        }, 500);
     }
 
     startAnimation = () => {

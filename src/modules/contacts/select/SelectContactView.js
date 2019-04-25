@@ -150,11 +150,13 @@ class SelectContactView extends Component {
                 PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION)
                     .then(granted => {
                         if (granted) {
-                            Discovery.isLocationEnabled().then(status => {
-                                if (!status) {
-                                    this.showLocationAlert(false);
-                                }
-                            }).catch(() => {});
+                            Discovery.isLocationEnabled()
+                                .then(status => {
+                                    if (!status) {
+                                        this.showLocationAlert(false);
+                                    }
+                                })
+                                .catch(() => {});
                         } else {
                             this.showLocationAlert(true);
                         }
@@ -230,11 +232,7 @@ class SelectContactView extends Component {
     onItemPress = item => {
         this.props.navigator.pop();
         this.props.onSuccessRead({
-            sendTo: {
-                username: item.u || item.username,
-                network: item.n || item.network,
-                slug: item.s || item.slug,
-            },
+            sendTo: item,
         });
     };
 
@@ -259,56 +257,53 @@ class SelectContactView extends Component {
             );
         }
 
-        let avatar = null;
-        switch (item.n || item.network) {
-            case 'twitter':
-                avatar = (
-                    <Avatar
-                        onPress={() => {
-                            this.onItemPress(item);
-                        }}
-                        network={'twitter'}
-                        source={{
-                            uri: `https://twitter.com/${item.u || item.username}/profile_image?size=original`,
-                            cache: 'default',
-                        }}
-                    />
-                );
-                break;
-            case 'discord':
-                avatar = (
-                    <Avatar
-                        onPress={() => {
-                            this.onItemPress(item);
-                        }}
-                        network={'discord'}
-                    />
-                );
-                break;
-            case 'reddit':
-                avatar = (
-                    <Avatar
-                        onPress={() => {
-                            this.onItemPress(item);
-                        }}
-                        network={'reddit'}
-                    />
-                );
-                break;
+        let network = item.n || item.network;
+        let slug = '';
+
+        if (['coil', 'internal'].indexOf(network) !== -1) {
+            switch (network) {
+                case 'internal':
+                    slug = 'Paper Account';
+                    break;
+                case 'coil':
+                    slug = 'Coil Account';
+                    break;
+            }
+        } else {
+            slug = network === 'discord' ? item.s || item.slug : item.u || item.username;
         }
 
         return (
             <TouchableHighlight
                 onPress={() => {
-                    this.onItemPress(item);
+                    this.onItemPress({
+                        username: item.u || item.username,
+                        network: item.n || item.network,
+                        slug,
+                    });
                 }}
                 underlayColor="#FFF"
             >
                 <View style={styles.row}>
-                    {avatar}
-                    <Text style={styles.name}>
-                        {item.n || item.network === 'discord' ? item.s || item.slug : item.u || item.username}
-                    </Text>
+                    <Avatar
+                        onPress={() => {
+                            this.onItemPress({
+                                username: item.u || item.username,
+                                network: item.n || item.network,
+                                slug,
+                            });
+                        }}
+                        network={network}
+                        source={
+                            network === 'twitter'
+                                ? {
+                                      uri: `https://twitter.com/${item.u || item.username}/profile_image?size=original`,
+                                      cache: 'default',
+                                  }
+                                : null
+                        }
+                    />
+                    <Text style={styles.name}>{slug}</Text>
                 </View>
             </TouchableHighlight>
         );

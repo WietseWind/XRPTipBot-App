@@ -16,10 +16,12 @@ export default class App {
         configureStore().then(_store => {
             this.store = _store;
 
+            // register screens
             registerScreens(this.store, Provider);
 
+            // app state listener
             AppState.addEventListener('change', this.handleAppStateChange);
-
+            // store update listener
             this.store.subscribe(this.onStoreUpdate.bind(this));
             this.store.dispatch(appActions.appInitialized());
         });

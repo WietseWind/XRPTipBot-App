@@ -250,7 +250,9 @@ class SendView extends Component {
                     <View style={[AppStyles.flex1, { paddingLeft: 15 }]}>{networkIcon}</View>
                     <View style={[AppStyles.flex4, AppStyles.centerAligned]}>
                         <Text style={[AppStyles.baseText, AppStyles.strong]}>
-                            {['coil', 'discord', 'coil'].indexOf !== -1 ? sendTo.slug : sendTo.username}
+                            {['coil', 'discord', 'internal'].indexOf(sendTo.network) !== -1
+                                ? sendTo.slug
+                                : sendTo.username}
                         </Text>
                     </View>
                     <TouchableOpacity

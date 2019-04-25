@@ -297,142 +297,28 @@ class TransactionsView extends Component {
         const { accountState } = this.props;
         const tx = obj.item;
 
-        let networkIcon = null;
+        let direction = null; // 0 => SENT / 1 => RECIEVE
         let balanceChange = null;
         let BOTTOM_BORDER_COLOR = null;
 
         if (accountState.uid !== tx.to_user) {
             // Outcome Transaction
-            const amount = tx.amount;
+            direction = 0;
             balanceChange = (
                 <Text style={[AppStyles.baseText, styles.outcomeAmount]}>
-                    -{amount} <Text style={[AppStyles.subtext]}>XRP</Text>
+                    -{tx.amount} <Text style={[AppStyles.subtext]}>XRP</Text>
                 </Text>
             );
             BOTTOM_BORDER_COLOR = 'rgba(192,40,39, 0.4)';
-
-            switch (tx._details.to.n) {
-                case 'twitter':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'twitter'}
-                            source={{
-                                uri: `https://twitter.com/${tx.to_user}/profile_image?size=original`,
-                                cache: 'default',
-                            }}
-                        />
-                    );
-                    break;
-                case 'discord':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'discord'}
-                        />
-                    );
-                    break;
-                case 'reddit':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'reddit'}
-                        />
-                    );
-                    break;
-                case 'internal':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'internal'}
-                        />
-                    );
-                    break;
-                case 'coil':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'coil'}
-                        />
-                    );
-                    break;
-            }
         } else {
             // Income Transaction
-            const amount = tx.amount;
+            direction = 1;
             balanceChange = (
                 <Text style={[AppStyles.baseText, styles.incomeAmount]}>
-                    +{amount} <Text style={[AppStyles.subtext]}>XRP</Text>
+                    +{tx.amount} <Text style={[AppStyles.subtext]}>XRP</Text>
                 </Text>
             );
             BOTTOM_BORDER_COLOR = 'rgba(60, 194, 158, 0.6)';
-
-            switch (tx._details.from.n) {
-                case 'twitter':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'twitter'}
-                            source={{
-                                uri: `https://twitter.com/${tx.from_user}/profile_image?size=original`,
-                                cache: 'default',
-                            }}
-                        />
-                    );
-                    break;
-                case 'discord':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'discord'}
-                        />
-                    );
-                    break;
-                case 'reddit':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'reddit'}
-                        />
-                    );
-                    break;
-                case 'internal':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'internal'}
-                        />
-                    );
-                    break;
-                case 'coil':
-                    networkIcon = (
-                        <Avatar
-                            onPress={() => {
-                                this.onItemClick(tx);
-                            }}
-                            network={'coil'}
-                        />
-                    );
-                    break;
-            }
         }
 
         const network = accountState.uid !== tx.to_user ? tx._details.to.n : tx._details.from.n;
@@ -466,7 +352,22 @@ class TransactionsView extends Component {
             >
                 <View style={styles.rowContent}>
                     <View style={[styles.row, AppStyles.flex3]}>
-                        {networkIcon}
+                        <Avatar
+                            onPress={() => {
+                                this.onItemClick(tx);
+                            }}
+                            network={network}
+                            source={
+                                network === 'twitter'
+                                    ? {
+                                          uri: `https://twitter.com/${
+                                              direction === 0 ? tx.to_user : tx.from_user
+                                          }/profile_image?size=original`,
+                                          cache: 'default',
+                                      }
+                                    : null
+                            }
+                        />
                         <View>
                             <Text numberOfLines={0} ellipsizeMode="head" style={[styles.name]}>
                                 {showName}
