@@ -85,6 +85,7 @@ class AddContactView extends Component {
         this.lookupTimeout = null;
         this.shouldClearList = false;
         this.searched = false;
+        this.sequence = 0;
     }
 
     componentDidMount() {
@@ -126,7 +127,7 @@ class AddContactView extends Component {
     onItemPress = user => {
         Alert.alert(
             'Add Contact',
-            `Add ${user.network === 'discord' ? user.slug : user.username} to contact list ?`,
+            `Add ${['discord', 'coil'].indexOf(user.network) !== -1 ? user.slug : user.username} to contact list ?`,
             [
                 { text: 'Yes', onPress: () => this.addToContacts(user) },
                 { text: 'No', onPress: () => null, style: 'cancel' },
@@ -148,17 +149,28 @@ class AddContactView extends Component {
         this.lookupTimeout = setTimeout(() => {
             if (text && text.length > 0) {
                 const me = accountState.uid;
+                this.sequence += 1;
+                const sequence = this.sequence;
                 lookupUsers(text).then(res => {
-                    this.setState({
-                        dataSource: _.remove(res.data, function(u) {
-                            return (
-                                _.findIndex(accountState.contacts, function(o) {
-                                    return o.u == u.username;
-                                }) < 0 && u.username !== me
-                            );
-                        }),
-                        lookingUp: false,
-                    });
+                    if (sequence === this.sequence) {
+                        this.setState({
+                            dataSource: _.sortBy(
+                                _.remove(res.data, function(u) {
+                                    return (
+                                        _.findIndex(accountState.contacts, function(o) {
+                                            return o.u == u.username;
+                                        }) < 0 && u.username !== me
+                                    );
+                                }),
+                                [
+                                    function(o) {
+                                        return o._sort;
+                                    },
+                                ],
+                            ),
+                            lookingUp: false,
+                        });
+                    }
                 });
             } else {
                 this.shouldClearList = true;
@@ -173,44 +185,6 @@ class AddContactView extends Component {
     renderItem = user => {
         const { item, index } = user;
 
-        let networkIcon = null;
-        switch (item.network) {
-            case 'twitter':
-                networkIcon = (
-                    <Avatar
-                        onPress={() => {
-                            this.onItemPress(item);
-                        }}
-                        network={'twitter'}
-                        source={{
-                            uri: `https://twitter.com/${item.username}/profile_image?size=original`,
-                            cache: 'default',
-                        }}
-                    />
-                );
-                break;
-            case 'discord':
-                networkIcon = (
-                    <Avatar
-                        onPress={() => {
-                            this.onItemPress(item);
-                        }}
-                        network={'discord'}
-                    />
-                );
-                break;
-            case 'reddit':
-                networkIcon = (
-                    <Avatar
-                        onPress={() => {
-                            this.onItemPress(item);
-                        }}
-                        network={'reddit'}
-                    />
-                );
-                break;
-        }
-
         return (
             <ListItem key={index} index={index}>
                 <TouchableHighlight
@@ -220,8 +194,23 @@ class AddContactView extends Component {
                     underlayColor="rgba(154, 154, 154, 0.25)"
                 >
                     <View style={styles.row}>
-                        {networkIcon}
-                        <Text style={styles.name}>{item.network === 'discord' ? item.slug : item.username}</Text>
+                        <Avatar
+                            onPress={() => {
+                                this.onItemPress(item);
+                            }}
+                            network={item.network}
+                            source={
+                                item.network === 'twitter'
+                                    ? {
+                                          uri: `https://www.xrptipbot.com/avatar/twitter/u:${item.username}`,
+                                          cache: 'default',
+                                      }
+                                    : null
+                            }
+                        />
+                        <Text style={styles.name}>
+                            {['discord', 'coil'].indexOf(item.network) !== -1 ? item.slug : item.username}
+                        </Text>
                     </View>
                 </TouchableHighlight>
             </ListItem>

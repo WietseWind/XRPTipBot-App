@@ -74,6 +74,7 @@ class SelectContactView extends Component {
         this.lookupTimeout = null;
         this.shouldClearList = false;
         this.searched = false;
+        this.sequence = 0;
     }
 
     componentDidMount() {
@@ -167,7 +168,7 @@ class SelectContactView extends Component {
             // enable discovering
             Discovery.setShouldDiscover(true).catch(() => {});
             Discovery.on('discoveredUsers', this.handleDiscover);
-        }, 1000);
+        }, 800);
     };
 
     updateDataSource = () => {
@@ -260,17 +261,10 @@ class SelectContactView extends Component {
         let network = item.n || item.network;
         let slug = '';
 
-        if (['coil', 'internal'].indexOf(network) !== -1) {
-            switch (network) {
-                case 'internal':
-                    slug = 'Paper Account';
-                    break;
-                case 'coil':
-                    slug = 'Coil Account';
-                    break;
-            }
+        if (network === 'internal') {
+            slug = 'Paper Account';
         } else {
-            slug = network === 'discord' ? item.s || item.slug : item.u || item.username;
+            slug = ['discord', 'coil'].indexOf(network) !== -1 ? item.s || item.slug : item.u || item.username;
         }
 
         return (
@@ -297,7 +291,7 @@ class SelectContactView extends Component {
                         source={
                             network === 'twitter'
                                 ? {
-                                      uri: `https://twitter.com/${item.u || item.username}/profile_image?size=original`,
+                                      uri: `https://www.xrptipbot.com/avatar/twitter/u:${item.u || item.username}`,
                                       cache: 'default',
                                   }
                                 : null
@@ -344,23 +338,34 @@ class SelectContactView extends Component {
         this.lookupTimeout = setTimeout(() => {
             if (text && text.length > 0) {
                 const me = accountState.uid;
+                this.sequence += 1;
+                const sequence = this.sequence;
                 lookupUsers(text).then(res => {
-                    const lookUpResult = _.remove(res.data, function(u) {
-                        return (
-                            _.findIndex(accountState.contacts, function(o) {
-                                return o.u == u.username;
-                            }) < 0 && u.username !== me
+                    if (sequence === this.sequence) {
+                        const lookUpResult = _.sortBy(
+                            _.remove(res.data, function(u) {
+                                return (
+                                    _.findIndex(accountState.contacts, function(o) {
+                                        return o.u == u.username;
+                                    }) < 0 && u.username !== me
+                                );
+                            }),
+                            [
+                                function(o) {
+                                    return o._sort;
+                                },
+                            ],
                         );
-                    });
 
-                    this.setState({
-                        contacts: newFilteredContacts,
-                        lookUpResult: lookUpResult,
-                        filteredDiscoveredUsers: newFilteredDiscoverd,
-                        lookingUp: false,
-                    });
+                        this.setState({
+                            contacts: newFilteredContacts,
+                            lookUpResult: lookUpResult,
+                            filteredDiscoveredUsers: newFilteredDiscoverd,
+                            lookingUp: false,
+                        });
 
-                    this.updateDataSource();
+                        this.updateDataSource();
+                    }
                 });
             } else {
                 this.setState({

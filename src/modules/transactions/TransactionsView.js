@@ -137,20 +137,38 @@ class TransactionsView extends Component {
     addToContacts = tx => {
         const { accountState, persistContacts } = this.props;
         const contacts = accountState.contacts ? accountState.contacts : [];
+        let slug = '';
+        if (accountState.uid !== tx.to_user) {
+            switch (tx._details.to.n) {
+                case 'discord':
+                    slug = tx.userid;
+                    break;
+                case 'coil':
+                    slug = tx._details.to.d;
+                    break;
+                default:
+                    slug = tx.to_user;
+            }
+        } else {
+            switch (tx._details.from.n) {
+                case 'discord':
+                    slug = tx.userid;
+                    break;
+                case 'coil':
+                    slug = tx._details.from.d;
+                    break;
+                default:
+                    slug = tx.from_user;
+            }
+        }
+
         const newList = [
             ...contacts,
             ...[
                 {
                     u: accountState.uid !== tx.to_user ? tx.to_user : tx.from_user,
                     n: accountState.uid !== tx.to_user ? tx._details.to.n : tx._details.from.n,
-                    s:
-                        accountState.uid !== tx.to_user
-                            ? tx._details.to.n === 'discord'
-                                ? tx.userid
-                                : tx.to_user
-                            : tx._details.from.n === 'discord'
-                            ? tx.userid
-                            : tx.from_user,
+                    s: slug,
                     new: true,
                 },
             ],
@@ -193,21 +211,19 @@ class TransactionsView extends Component {
 
         let slug = '';
 
-        if (['coil', 'internal'].indexOf(network) !== -1) {
-            switch (network) {
-                case 'internal':
-                    slug = 'Paper Account';
-                    break;
-                case 'coil':
-                    slug = 'Coil Account';
-                    break;
-            }
-        } else {
-            if (accountState.uid !== tx.to_user) {
-                slug = network === 'discord' ? tx.userid : tx.to_user;
-            } else {
-                slug = network === 'discord' ? tx.userid : tx.from_user;
-            }
+        switch (network) {
+            case 'internal':
+                slug = 'Paper Account';
+                break;
+            case 'coil':
+                slug = accountState.uid !== tx.to_user ? tx._details.to.d : tx._details.from.d;
+                break;
+            default:
+                if (accountState.uid !== tx.to_user) {
+                    slug = network === 'discord' ? tx.userid : tx.to_user;
+                } else {
+                    slug = network === 'discord' ? tx.userid : tx.from_user;
+                }
         }
 
         this.props.navigator.push({
@@ -241,7 +257,7 @@ class TransactionsView extends Component {
             !_.find(contacts, function(o) {
                 return o.u === searchFor;
             }) &&
-            ['internal', 'coil'].indexOf(network) === -1
+            network !== 'internal'
         ) {
             options.push('Add to contacts');
             addToContactsIndex = options.length - 1;
@@ -282,7 +298,9 @@ class TransactionsView extends Component {
         transactions.forEach(item => {
             if (
                 item.to_user.toLowerCase().indexOf(text.toLowerCase()) !== -1 ||
-                item.from_user.toLowerCase().indexOf(text.toLowerCase()) !== -1
+                item.from_user.toLowerCase().indexOf(text.toLowerCase()) !== -1 ||
+                (item._details.from.d + '').toLowerCase().indexOf(text.toLowerCase()) !== -1 ||
+                (item._details.to.d + '').toLowerCase().indexOf(text.toLowerCase()) !== -1
             ) {
                 newFilter.push(item);
             }
@@ -325,21 +343,19 @@ class TransactionsView extends Component {
 
         let showName = '';
 
-        if (['coil', 'internal'].indexOf(network) !== -1) {
-            switch (network) {
-                case 'internal':
-                    showName = 'Paper Account';
-                    break;
-                case 'coil':
-                    showName = 'Coil Account';
-                    break;
-            }
-        } else {
-            if (accountState.uid !== tx.to_user) {
-                showName = network === 'discord' ? tx.userid : tx.to_user;
-            } else {
-                showName = network === 'discord' ? tx.userid : tx.from_user;
-            }
+        switch (network) {
+            case 'internal':
+                showName = 'Paper Account';
+                break;
+            case 'coil':
+                showName = accountState.uid !== tx.to_user ? tx._details.to.d : tx._details.from.d;
+                break;
+            default:
+                if (accountState.uid !== tx.to_user) {
+                    showName = network === 'discord' ? tx.userid : tx.to_user;
+                } else {
+                    showName = network === 'discord' ? tx.userid : tx.from_user;
+                }
         }
 
         return (
@@ -360,9 +376,9 @@ class TransactionsView extends Component {
                             source={
                                 network === 'twitter'
                                     ? {
-                                          uri: `https://twitter.com/${
+                                          uri: `https://www.xrptipbot.com/avatar/twitter/u:${
                                               direction === 0 ? tx.to_user : tx.from_user
-                                          }/profile_image?size=original`,
+                                          }`,
                                           cache: 'default',
                                       }
                                     : null

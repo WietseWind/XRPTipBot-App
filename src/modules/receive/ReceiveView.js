@@ -104,9 +104,6 @@ class ReceiveView extends Component {
             case 'internal':
                 label = 'TipBot';
                 break;
-            case 'coil':
-                label = 'Coil Account';
-                break;
             default:
                 label = accountState.slug;
                 break;
@@ -149,6 +146,7 @@ class ReceiveView extends Component {
             const sendAmount = findGetParameter(url, 'amount');
             switch (network) {
                 case 'discord':
+                case 'coil':
                     this.props.lookupUsers(username).then(res => {
                         if (res.data.length === 1) {
                             const user = res.data[0];
@@ -165,15 +163,6 @@ class ReceiveView extends Component {
                     setTimeout(() => {
                         this.showSendScreen({
                             sendTo: { username, network, slug: 'Paper Account' },
-                            sendAmount,
-                        });
-                    }, 1000);
-
-                    break;
-                case 'coil':
-                    setTimeout(() => {
-                        this.showSendScreen({
-                            sendTo: { username, network, slug: 'Coil Account' },
                             sendAmount,
                         });
                     }, 1000);
@@ -529,7 +518,7 @@ class ReceiveView extends Component {
                                     ref={ref => (this.qr = ref)}
                                     logo={true}
                                     value={`xrptipbot://${accountState.network}/${accountState[
-                                        accountState.network === 'discord' ? 'uid' : 'slug'
+                                        ['discord', 'coil'].indexOf(accountState.network) !== -1 ? 'uid' : 'slug'
                                     ]
                                         .replace('@', '')
                                         .replace('/u/', '')}`}

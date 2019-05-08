@@ -212,7 +212,7 @@ class ContactsView extends Component {
 
         contacts.forEach((item, index) => {
             let firstLetter = '';
-            if (item.n === 'discord') {
+            if (['discord', 'coil'].indexOf(item.n) !== -1) {
                 firstLetter = item.s.charAt(0).toUpperCase();
             } else {
                 firstLetter = item.u.charAt(0).toUpperCase();
@@ -317,43 +317,6 @@ class ContactsView extends Component {
 
     renderItem = user => {
         const { item } = user;
-        let networkIcon = null;
-        switch (item.n) {
-            case 'twitter':
-                networkIcon = (
-                    <Avatar
-                        onPress={() => {
-                            this.onItemPress(item);
-                        }}
-                        network={'twitter'}
-                        source={{
-                            uri: `https://twitter.com/${item.u}/profile_image?size=original`,
-                            cache: 'default',
-                        }}
-                    />
-                );
-                break;
-            case 'discord':
-                networkIcon = (
-                    <Avatar
-                        onPress={() => {
-                            this.onItemPress(item);
-                        }}
-                        network={'discord'}
-                    />
-                );
-                break;
-            case 'reddit':
-                networkIcon = (
-                    <Avatar
-                        onPress={() => {
-                            this.onItemPress(item);
-                        }}
-                        network={'reddit'}
-                    />
-                );
-                break;
-        }
 
         return (
             <Row new={item.new} onPressDelete={() => this.onPressDelete(item)}>
@@ -364,8 +327,21 @@ class ContactsView extends Component {
                     underlayColor="#FFF"
                 >
                     <View style={styles.row}>
-                        {networkIcon}
-                        <Text style={styles.name}>{item.n === 'discord' ? item.s : item.u}</Text>
+                        <Avatar
+                            onPress={() => {
+                                this.onItemPress(item);
+                            }}
+                            network={item.n}
+                            source={
+                                item.n === 'twitter'
+                                    ? {
+                                          uri: `https://www.xrptipbot.com/avatar/twitter/u:${item.u}`,
+                                          cache: 'default',
+                                      }
+                                    : null
+                            }
+                        />
+                        <Text style={styles.name}>{['discord', 'coil'].indexOf(item.n) !== -1 ? item.s : item.u}</Text>
                     </View>
                 </TouchableHighlight>
             </Row>

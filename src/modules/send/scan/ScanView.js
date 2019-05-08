@@ -49,6 +49,12 @@ class SendScanView extends Component {
         onSuccessRead: PropTypes.func,
     };
 
+    componentWillUnmount() {
+        if (this.scanTimeout) {
+            clearTimeout(this.scanTimeout);
+        }
+    }
+
     vibration = async () => {
         Vibration.vibrate();
     };
@@ -83,8 +89,6 @@ class SendScanView extends Component {
 
         if (this.scanned || this.state.isScanning) return;
 
-        clearTimeout(this.scanTimeout);
-
         this.setState({
             isScanning: true,
         });
@@ -98,8 +102,16 @@ class SendScanView extends Component {
                         this.scanned = true;
                         const user = res.data[0];
                         this.props.navigator.pop();
+                        let slug = '';
+                        switch (user.network) {
+                            case 'internal':
+                                slug = 'Paper Account';
+                                break;
+                            default:
+                                slug = user.slug;
+                        }
                         this.props.onSuccessRead({
-                            sendTo: { username: user.username, network: user.network, slug: user.slug },
+                            sendTo: { username: user.username, network: user.network, slug: slug },
                         });
                     } else {
                         this.vibration();
@@ -109,7 +121,6 @@ class SendScanView extends Component {
                 .finally(() => {
                     this.setState({ isLoading: false });
                 });
-            return;
         }
 
         if (TIPBOT_REGEX.test(data)) {
@@ -120,6 +131,7 @@ class SendScanView extends Component {
 
             switch (network) {
                 case 'discord':
+                case 'coil':
                     this.setState({ isLoading: true });
                     this.props
                         .lookupUsers(username)
@@ -147,27 +159,15 @@ class SendScanView extends Component {
                         sendAmount,
                     });
                     break;
-                case 'coil':
-                    this.props.navigator.pop();
-                    this.props.onSuccessRead({
-                        sendTo: { username, network, slug: 'Coil Account' },
-                        sendAmount,
-                    });
-                    break;
                 default:
                     this.props.navigator.pop();
                     this.props.onSuccessRead({ sendTo: { username, network }, sendAmount });
             }
-            return;
         }
 
-        this.vibration();
-        Alert.show('Please scan an XRPTipBot QR Code ', { type: 'error' });
-
         this.scanTimeout = setTimeout(() => {
-            this.setState({
-                isScanning: false,
-            });
+            this.setState({ isScanning: false });
+            this.scanned = false;
         }, 2000);
     };
 
