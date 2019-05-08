@@ -107,7 +107,7 @@ android {
         applicationId "com.xrptipbot"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 105041
+        versionCode 106003
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true

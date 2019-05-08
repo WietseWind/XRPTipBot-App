@@ -1,13 +1,13 @@
 {
   "name": "XRPTipBot",
-  "version": "1.5.4",
+  "version": "1.6.0",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "start:android": "node node_modules/react-native/local-cli/cli.js run-android",
     "start:ios": "node node_modules/react-native/local-cli/cli.js run-ios",
     "install:android": "cd android && ./gradlew installDebug",
-    "release:android": "npm run bundle:android && cd android && ./gradlew assembleRelease",
+    "release:android": "cd android && ./gradlew assembleRelease",
     "bundle:ios": "node ./node_modules/react-native/local-cli/cli.js bundle --platform ios --entry-file index.js --bundle-output ios/XRPTipBot/main.jsbundle --dev=false --verbose --assets-dest ios/XRPTipBot",
     "bundle:android": "node ./node_modules/react-native/local-cli/cli.js bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle",
     "prettier": "prettier --write `find src -name \"*.js\"`",
