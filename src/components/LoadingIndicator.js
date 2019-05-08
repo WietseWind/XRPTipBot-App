@@ -15,7 +15,7 @@ LoadingIndicator.propTypes = {
 
 LoadingIndicator.defaultProps = {
     color: '#3D7CD2',
-    size: Platform.OS === 'android' ? 20 : 'small',
+    size: 'small',
     style: {
         paddingVertical: 20,
     },
